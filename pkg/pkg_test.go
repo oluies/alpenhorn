@@ -19,9 +19,9 @@ import (
 
 	"github.com/oluies/neverlur/edhttp"
 	"github.com/oluies/neverlur/log"
+	"github.com/oluies/neverlur/mock"
 	"github.com/oluies/neverlur/pkg"
 	"vuvuzela.io/crypto/ibe"
-	"vuvuzela.io/internal/mock"
 )
 
 func launchPKG(t *testing.T, regTokenHandler pkg.RegTokenHandler) (*mock.PKG, *pkg.CoordinatorClient) {

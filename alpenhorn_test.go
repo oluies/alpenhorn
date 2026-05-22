@@ -23,9 +23,9 @@ import (
 	"github.com/oluies/neverlur/edtls"
 	"github.com/oluies/neverlur/internal/alplog"
 	"github.com/oluies/neverlur/log"
+	"github.com/oluies/neverlur/mock"
 	"github.com/oluies/neverlur/pkg"
 	"vuvuzela.io/crypto/rand"
-	"vuvuzela.io/internal/mock"
 )
 
 type chanHandler struct {
