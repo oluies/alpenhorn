@@ -19,12 +19,12 @@ import (
 	"github.com/oluies/neverlur/cdn"
 	"github.com/oluies/neverlur/config"
 	"github.com/oluies/neverlur/coordinator"
+	"github.com/oluies/neverlur/debug"
 	"github.com/oluies/neverlur/edtls"
 	"github.com/oluies/neverlur/internal/alplog"
 	"github.com/oluies/neverlur/log"
 	"github.com/oluies/neverlur/pkg"
 	"vuvuzela.io/crypto/rand"
-	"github.com/oluies/neverlur/debug"
 	"vuvuzela.io/internal/mock"
 )
 

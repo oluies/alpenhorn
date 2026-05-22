@@ -12,8 +12,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/oluies/neverlur/errors"
 	"github.com/oluies/neverlur/debug"
+	"github.com/oluies/neverlur/errors"
 )
 
 var StdClient = &Client{
