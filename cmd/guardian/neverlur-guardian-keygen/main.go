@@ -42,7 +42,7 @@ func main() {
 	checkOverwrite(privatePath)
 	checkOverwrite(publicPath)
 
-	fmt.Fprintf(os.Stdout, inspirationalMessage)
+	fmt.Fprint(os.Stdout, inspirationalMessage)
 	pw := confirmPassphrase()
 	fmt.Println()
 

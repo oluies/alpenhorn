@@ -17,7 +17,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/boltdb/bolt"
+	bolt "go.etcd.io/bbolt"
 	"github.com/davidlazar/go-crypto/encoding/base32"
 )
 
