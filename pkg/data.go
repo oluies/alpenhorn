@@ -129,7 +129,7 @@ func appendLog(tx *badger.Txn, identity *[64]byte, event UserEvent) error {
 		return errorf(ErrDatabaseError, "%s", err)
 	} else {
 		err := item.Value(func(data []byte) error {
-			return json.Unmarshal(data, currLog)
+			return json.Unmarshal(data, &currLog)
 		})
 		if err != nil {
 			return errorf(ErrDatabaseError, "%s", err)
