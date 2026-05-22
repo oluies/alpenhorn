@@ -16,9 +16,8 @@ import (
 // value pointed to by v.  Unmarshal has special cases for the following
 // types:
 //
-//   []byte can be encoded as a base32 string
-//   time.Duration can be encoded as a string in the form "72h3m0.5s"
-//
+//	[]byte can be encoded as a base32 string
+//	time.Duration can be encoded as a string in the form "72h3m0.5s"
 func Unmarshal(data []byte, v interface{}) error {
 	m, err := parse(string(data))
 	if err != nil {

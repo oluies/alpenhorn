@@ -50,6 +50,7 @@ type OutgoingFriendRequest struct {
 }
 
 // sentFriendRequest is the result of sending an OutgoingFriendRequest.
+//
 //easyjson:readable
 type sentFriendRequest struct {
 	Username     string

@@ -31,6 +31,7 @@ type persistedState struct {
 
 // persistedFriend is the persisted representation of the Friend type.
 // We use this because Friend.extraData is unexported but must be persisted.
+//
 //easyjson:readable
 type persistedFriend struct {
 	Username    string
