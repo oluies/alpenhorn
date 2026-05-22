@@ -24,7 +24,7 @@ import (
 	"github.com/oluies/neverlur/log"
 	"github.com/oluies/neverlur/pkg"
 	"vuvuzela.io/crypto/rand"
-	"vuvuzela.io/internal/debug"
+	"github.com/oluies/neverlur/debug"
 	"vuvuzela.io/internal/mock"
 )
 

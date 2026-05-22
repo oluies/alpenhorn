@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 
 	"github.com/oluies/neverlur/config"
-	"vuvuzela.io/internal/ioutil2"
+	"github.com/oluies/neverlur/ioutil2"
 )
 
 //easyjson:readable

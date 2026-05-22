@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/oluies/neverlur/errors"
-	"vuvuzela.io/internal/debug"
+	"github.com/oluies/neverlur/debug"
 )
 
 var StdClient = &Client{

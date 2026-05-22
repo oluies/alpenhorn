@@ -5,7 +5,13 @@ go 1.25.0
 // The vuvuzela.io vanity import domain is currently unreachable.
 // Map the sister modules to their canonical GitHub repositories so
 // builds work without depending on the vanity redirector.
+//
+// vuvuzela.io/alpenhorn is bridged to this module: the upstream vuvuzela
+// codebase imports it by the old vanity path, and we are the rebranded
+// successor. Resolving it locally keeps the upstream-pinned vuvuzela
+// commit buildable without forking it.
 replace (
+	vuvuzela.io/alpenhorn => ./
 	vuvuzela.io/concurrency => github.com/vuvuzela/concurrency v0.0.0-20190327123758-e608f351e310
 	vuvuzela.io/crypto => github.com/vuvuzela/crypto v0.0.0-20220523120157-1709ed3a3b66
 	vuvuzela.io/internal => github.com/vuvuzela/internal v0.0.0-20190910144301-7321cf92c8ba
@@ -25,6 +31,7 @@ require (
 	golang.org/x/crypto v0.52.0
 	golang.org/x/net v0.55.0
 	google.golang.org/grpc v1.81.1
+	vuvuzela.io/alpenhorn v0.0.0-00010101000000-000000000000
 	vuvuzela.io/concurrency v0.0.0-00010101000000-000000000000
 	vuvuzela.io/crypto v0.0.0-00010101000000-000000000000
 	vuvuzela.io/internal v0.0.0-00010101000000-000000000000
