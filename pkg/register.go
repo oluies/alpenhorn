@@ -14,7 +14,7 @@ import (
 	"github.com/davidlazar/go-crypto/encoding/base32"
 	"github.com/dgraph-io/badger"
 
-	"vuvuzela.io/alpenhorn/log"
+	"github.com/oluies/neverlur/log"
 )
 
 type registerArgs struct {

@@ -20,7 +20,7 @@ import (
 
 	"github.com/davidlazar/go-crypto/encoding/base32"
 
-	"vuvuzela.io/alpenhorn/edtls"
+	"github.com/oluies/neverlur/edtls"
 )
 
 func TestCDN(t *testing.T) {

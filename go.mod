@@ -1,4 +1,4 @@
-module vuvuzela.io/alpenhorn
+module github.com/oluies/neverlur
 
 go 1.25.0
 

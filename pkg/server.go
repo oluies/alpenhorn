@@ -21,9 +21,9 @@ import (
 
 	"github.com/dgraph-io/badger"
 
-	"vuvuzela.io/alpenhorn/edhttp"
-	"vuvuzela.io/alpenhorn/errors"
-	"vuvuzela.io/alpenhorn/log"
+	"github.com/oluies/neverlur/edhttp"
+	"github.com/oluies/neverlur/errors"
+	"github.com/oluies/neverlur/log"
 	"vuvuzela.io/crypto/bls"
 	"vuvuzela.io/crypto/ibe"
 )

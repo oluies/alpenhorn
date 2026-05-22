@@ -17,8 +17,8 @@ import (
 	"net/url"
 	"sync"
 
-	"vuvuzela.io/alpenhorn/edtls"
-	"vuvuzela.io/alpenhorn/errors"
+	"github.com/oluies/neverlur/edtls"
+	"github.com/oluies/neverlur/errors"
 )
 
 type Client struct {

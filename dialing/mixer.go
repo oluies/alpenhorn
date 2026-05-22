@@ -18,9 +18,9 @@ import (
 	"sync"
 	"unsafe"
 
-	"vuvuzela.io/alpenhorn/bloom"
-	"vuvuzela.io/alpenhorn/edhttp"
-	"vuvuzela.io/alpenhorn/errors"
+	"github.com/oluies/neverlur/bloom"
+	"github.com/oluies/neverlur/edhttp"
+	"github.com/oluies/neverlur/errors"
 	"vuvuzela.io/concurrency"
 	"vuvuzela.io/crypto/onionbox"
 	"vuvuzela.io/crypto/rand"

@@ -12,7 +12,7 @@ import (
 	"os"
 	"time"
 
-	"vuvuzela.io/alpenhorn/config"
+	"github.com/oluies/neverlur/config"
 	// Register the convo inner config.
 	_ "vuvuzela.io/vuvuzela/convo"
 )

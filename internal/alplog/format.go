@@ -11,8 +11,8 @@ import (
 	"os"
 	"sync"
 
-	"vuvuzela.io/alpenhorn/log"
-	"vuvuzela.io/alpenhorn/log/ansi"
+	"github.com/oluies/neverlur/log"
+	"github.com/oluies/neverlur/log/ansi"
 )
 
 var bufPool = sync.Pool{

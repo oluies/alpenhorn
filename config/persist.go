@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"vuvuzela.io/alpenhorn/errors"
+	"github.com/oluies/neverlur/errors"
 	"vuvuzela.io/internal/ioutil2"
 )
 

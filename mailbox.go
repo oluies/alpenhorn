@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GNU AGPL
 // license that can be found in the LICENSE file.
 
-package alpenhorn
+package neverlur
 
 import (
 	"crypto/sha256"
@@ -11,8 +11,8 @@ import (
 	"io/ioutil"
 	"net/url"
 
-	"vuvuzela.io/alpenhorn/config"
-	"vuvuzela.io/alpenhorn/errors"
+	"github.com/oluies/neverlur/config"
+	"github.com/oluies/neverlur/errors"
 )
 
 func (c *Client) fetchMailbox(cdnConfig config.CDNServerConfig, baseURL string, mailboxID uint32) ([]byte, error) {

@@ -18,13 +18,13 @@ import (
 	"text/template"
 	"time"
 
-	"vuvuzela.io/alpenhorn/cmd/cmdutil"
-	"vuvuzela.io/alpenhorn/config"
-	"vuvuzela.io/alpenhorn/coordinator"
-	"vuvuzela.io/alpenhorn/edtls"
-	"vuvuzela.io/alpenhorn/encoding/toml"
-	"vuvuzela.io/alpenhorn/internal/alplog"
-	"vuvuzela.io/alpenhorn/log"
+	"github.com/oluies/neverlur/cmd/cmdutil"
+	"github.com/oluies/neverlur/config"
+	"github.com/oluies/neverlur/coordinator"
+	"github.com/oluies/neverlur/edtls"
+	"github.com/oluies/neverlur/encoding/toml"
+	"github.com/oluies/neverlur/internal/alplog"
+	"github.com/oluies/neverlur/log"
 )
 
 var (

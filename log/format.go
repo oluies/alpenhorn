@@ -18,7 +18,7 @@ import (
 
 	"github.com/davidlazar/go-crypto/encoding/base32"
 
-	"vuvuzela.io/alpenhorn/log/ansi"
+	"github.com/oluies/neverlur/log/ansi"
 )
 
 var bufPool = sync.Pool{

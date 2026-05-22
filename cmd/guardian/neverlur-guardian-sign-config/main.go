@@ -16,9 +16,9 @@ import (
 
 	"github.com/davidlazar/go-crypto/encoding/base32"
 
-	"vuvuzela.io/alpenhorn/cmd/guardian"
-	"vuvuzela.io/alpenhorn/config"
-	"vuvuzela.io/alpenhorn/log"
+	"github.com/oluies/neverlur/cmd/guardian"
+	"github.com/oluies/neverlur/config"
+	"github.com/oluies/neverlur/log"
 
 	// Register the convo inner config.
 	_ "vuvuzela.io/vuvuzela/convo"

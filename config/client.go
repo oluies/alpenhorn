@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"time"
 
-	"vuvuzela.io/alpenhorn/errors"
+	"github.com/oluies/neverlur/errors"
 	"vuvuzela.io/internal/debug"
 )
 

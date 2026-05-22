@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GNU AGPL
 // license that can be found in the LICENSE file.
 
-package alpenhorn
+package neverlur
 
 import (
 	"crypto/ed25519"

@@ -17,14 +17,14 @@ import (
 	"github.com/davidlazar/go-crypto/encoding/base32"
 	"golang.org/x/net/context"
 
-	"vuvuzela.io/alpenhorn/addfriend"
-	"vuvuzela.io/alpenhorn/config"
-	"vuvuzela.io/alpenhorn/dialing"
-	"vuvuzela.io/alpenhorn/edhttp"
-	"vuvuzela.io/alpenhorn/errors"
-	"vuvuzela.io/alpenhorn/log"
-	"vuvuzela.io/alpenhorn/pkg"
-	"vuvuzela.io/alpenhorn/typesocket"
+	"github.com/oluies/neverlur/addfriend"
+	"github.com/oluies/neverlur/config"
+	"github.com/oluies/neverlur/dialing"
+	"github.com/oluies/neverlur/edhttp"
+	"github.com/oluies/neverlur/errors"
+	"github.com/oluies/neverlur/log"
+	"github.com/oluies/neverlur/pkg"
+	"github.com/oluies/neverlur/typesocket"
 	"vuvuzela.io/vuvuzela/mixnet"
 )
 

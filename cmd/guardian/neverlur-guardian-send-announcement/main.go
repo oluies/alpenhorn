@@ -13,9 +13,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"vuvuzela.io/alpenhorn/cmd/guardian"
-	"vuvuzela.io/alpenhorn/config"
-	"vuvuzela.io/alpenhorn/edhttp"
+	"github.com/oluies/neverlur/cmd/guardian"
+	"github.com/oluies/neverlur/config"
+	"github.com/oluies/neverlur/edhttp"
 	"vuvuzela.io/vuvuzela/convo"
 	"vuvuzela.io/vuvuzela/coordinator"
 )

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GNU AGPL
 // license that can be found in the LICENSE file.
 
-package alpenhorn
+package neverlur
 
 import (
 	"bytes"
@@ -16,13 +16,13 @@ import (
 	"testing"
 	"time"
 
-	"vuvuzela.io/alpenhorn/cdn"
-	"vuvuzela.io/alpenhorn/config"
-	"vuvuzela.io/alpenhorn/coordinator"
-	"vuvuzela.io/alpenhorn/edtls"
-	"vuvuzela.io/alpenhorn/internal/alplog"
-	"vuvuzela.io/alpenhorn/log"
-	"vuvuzela.io/alpenhorn/pkg"
+	"github.com/oluies/neverlur/cdn"
+	"github.com/oluies/neverlur/config"
+	"github.com/oluies/neverlur/coordinator"
+	"github.com/oluies/neverlur/edtls"
+	"github.com/oluies/neverlur/internal/alplog"
+	"github.com/oluies/neverlur/log"
+	"github.com/oluies/neverlur/pkg"
 	"vuvuzela.io/crypto/rand"
 	"vuvuzela.io/internal/debug"
 	"vuvuzela.io/internal/mock"

@@ -20,14 +20,14 @@ import (
 	"text/template"
 	"time"
 
-	"vuvuzela.io/alpenhorn/cmd/cmdutil"
-	"vuvuzela.io/alpenhorn/config"
-	"vuvuzela.io/alpenhorn/edtls"
-	"vuvuzela.io/alpenhorn/encoding/toml"
-	"vuvuzela.io/alpenhorn/errors"
-	"vuvuzela.io/alpenhorn/internal/alplog"
-	"vuvuzela.io/alpenhorn/log"
-	"vuvuzela.io/alpenhorn/pkg"
+	"github.com/oluies/neverlur/cmd/cmdutil"
+	"github.com/oluies/neverlur/config"
+	"github.com/oluies/neverlur/edtls"
+	"github.com/oluies/neverlur/encoding/toml"
+	"github.com/oluies/neverlur/errors"
+	"github.com/oluies/neverlur/internal/alplog"
+	"github.com/oluies/neverlur/log"
+	"github.com/oluies/neverlur/pkg"
 	"vuvuzela.io/crypto/rand"
 )
 

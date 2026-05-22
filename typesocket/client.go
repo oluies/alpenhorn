@@ -9,8 +9,8 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"vuvuzela.io/alpenhorn/edtls"
-	"vuvuzela.io/alpenhorn/log"
+	"github.com/oluies/neverlur/edtls"
+	"github.com/oluies/neverlur/log"
 )
 
 type ClientConn struct {

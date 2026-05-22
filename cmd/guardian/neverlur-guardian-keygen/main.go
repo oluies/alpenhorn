@@ -18,7 +18,7 @@ import (
 	"golang.org/x/crypto/nacl/secretbox"
 	"golang.org/x/crypto/ssh/terminal"
 
-	"vuvuzela.io/alpenhorn/cmd/guardian"
+	"github.com/oluies/neverlur/cmd/guardian"
 )
 
 var inspirationalMessage = `
