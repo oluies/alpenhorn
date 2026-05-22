@@ -3,19 +3,19 @@
 // license that can be found in the LICENSE file.
 
 // Package alpenhorn implements an Alpenhorn client.
-package alpenhorn
+package neverlur
 
 import (
 	"crypto/ed25519"
 	"fmt"
 	"sync"
 
-	"vuvuzela.io/alpenhorn/config"
-	"vuvuzela.io/alpenhorn/edhttp"
-	"vuvuzela.io/alpenhorn/errors"
-	"vuvuzela.io/alpenhorn/keywheel"
-	"vuvuzela.io/alpenhorn/pkg"
-	"vuvuzela.io/alpenhorn/typesocket"
+	"github.com/oluies/neverlur/config"
+	"github.com/oluies/neverlur/edhttp"
+	"github.com/oluies/neverlur/errors"
+	"github.com/oluies/neverlur/keywheel"
+	"github.com/oluies/neverlur/pkg"
+	"github.com/oluies/neverlur/typesocket"
 )
 
 // Use github.com/davidlazar/easyjson:

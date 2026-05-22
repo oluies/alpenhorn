@@ -7,7 +7,7 @@ import (
 	"crypto/x509"
 	"net"
 
-	"vuvuzela.io/alpenhorn/errors"
+	"github.com/oluies/neverlur/errors"
 )
 
 var (

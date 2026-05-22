@@ -2,9 +2,9 @@
 // Use of this source code is governed by the GNU AGPL
 // license that can be found in the LICENSE file.
 
-package alpenhorn
+package neverlur
 
-import "vuvuzela.io/alpenhorn/config"
+import "github.com/oluies/neverlur/config"
 
 func (c *Client) Bootstrap(addFriendConfig, dialingConfig *config.SignedConfig) error {
 	if err := addFriendConfig.Validate(); err != nil {

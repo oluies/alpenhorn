@@ -9,7 +9,7 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"vuvuzela.io/alpenhorn/log"
+	"github.com/oluies/neverlur/log"
 )
 
 // The Hub and serverConn methods are based on

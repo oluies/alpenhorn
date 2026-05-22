@@ -17,11 +17,11 @@ import (
 
 	"github.com/dgraph-io/badger"
 
-	"vuvuzela.io/alpenhorn/edhttp"
-	"vuvuzela.io/alpenhorn/log"
-	"vuvuzela.io/alpenhorn/pkg"
+	"github.com/oluies/neverlur/edhttp"
+	"github.com/oluies/neverlur/log"
+	"github.com/oluies/neverlur/mock"
+	"github.com/oluies/neverlur/pkg"
 	"vuvuzela.io/crypto/ibe"
-	"vuvuzela.io/internal/mock"
 )
 
 func launchPKG(t *testing.T, regTokenHandler pkg.RegTokenHandler) (*mock.PKG, *pkg.CoordinatorClient) {

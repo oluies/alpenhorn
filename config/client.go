@@ -12,8 +12,8 @@ import (
 	"net/http"
 	"time"
 
-	"vuvuzela.io/alpenhorn/errors"
-	"vuvuzela.io/internal/debug"
+	"github.com/oluies/neverlur/debug"
+	"github.com/oluies/neverlur/errors"
 )
 
 var StdClient = &Client{

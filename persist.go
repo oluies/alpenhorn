@@ -2,15 +2,15 @@
 // Use of this source code is governed by the GNU AGPL
 // license that can be found in the LICENSE file.
 
-package alpenhorn
+package neverlur
 
 import (
 	"crypto/ed25519"
 	"encoding/json"
 	"io/ioutil"
 
-	"vuvuzela.io/alpenhorn/config"
-	"vuvuzela.io/internal/ioutil2"
+	"github.com/oluies/neverlur/config"
+	"github.com/oluies/neverlur/ioutil2"
 )
 
 //easyjson:readable
@@ -31,6 +31,7 @@ type persistedState struct {
 
 // persistedFriend is the persisted representation of the Friend type.
 // We use this because Friend.extraData is unexported but must be persisted.
+//
 //easyjson:readable
 type persistedFriend struct {
 	Username    string

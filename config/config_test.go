@@ -14,8 +14,8 @@ import (
 
 	"github.com/davidlazar/go-crypto/encoding/base32"
 
-	"vuvuzela.io/alpenhorn/pkg"
-	"vuvuzela.io/internal/debug"
+	"github.com/oluies/neverlur/debug"
+	"github.com/oluies/neverlur/pkg"
 	"vuvuzela.io/vuvuzela/mixnet"
 )
 
@@ -125,9 +125,12 @@ func TestMarshalAddFriendConfig(t *testing.T) {
 	conf := &SignedConfig{
 		Version: SignedConfigVersion,
 
-		// need to round otherwise the time includes a monotonic clock value
-		Created: time.Now().Round(0),
-		Expires: time.Now().Round(0),
+		// UTC strips the *time.Location pointer (defaults to time.Local,
+		// which reflect.DeepEqual treats as different from the fixed-zone
+		// Location that JSON round-tripping produces). Round(0) drops the
+		// monotonic clock.
+		Created: time.Now().UTC().Round(0),
+		Expires: time.Now().UTC().Round(0),
 
 		Guardians: []Guardian{
 			{
@@ -207,9 +210,12 @@ func TestMarshalDialingConfig(t *testing.T) {
 	conf := &SignedConfig{
 		Version: SignedConfigVersion,
 
-		// need to round otherwise the time includes a monotonic clock value
-		Created: time.Now().Round(0),
-		Expires: time.Now().Round(0),
+		// UTC strips the *time.Location pointer (defaults to time.Local,
+		// which reflect.DeepEqual treats as different from the fixed-zone
+		// Location that JSON round-tripping produces). Round(0) drops the
+		// monotonic clock.
+		Created: time.Now().UTC().Round(0),
+		Expires: time.Now().UTC().Round(0),
 
 		Guardians: []Guardian{
 			{

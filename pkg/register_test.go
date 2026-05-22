@@ -12,7 +12,7 @@ import (
 	"os"
 	"testing"
 
-	"vuvuzela.io/alpenhorn/log"
+	"github.com/oluies/neverlur/log"
 )
 
 func BenchmarkRegister(b *testing.B) {

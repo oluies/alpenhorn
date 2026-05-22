@@ -1,0 +1,12 @@
+# Claude Code local state (skills are committed; settings/plans are not)
+.claude/settings.local.json
+.claude/plans/
+
+# Editor / OS
+.DS_Store
+*.swp
+*~
+
+# Build artifacts
+*.test
+*.out

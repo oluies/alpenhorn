@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GNU AGPL
 // license that can be found in the LICENSE file.
 
-package alpenhorn
+package neverlur
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"encoding/binary"
 	"unsafe"
 
-	"vuvuzela.io/alpenhorn/pkg"
+	"github.com/oluies/neverlur/pkg"
 	"vuvuzela.io/crypto/bls"
 )
 

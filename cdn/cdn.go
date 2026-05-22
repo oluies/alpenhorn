@@ -17,8 +17,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/boltdb/bolt"
 	"github.com/davidlazar/go-crypto/encoding/base32"
+	bolt "go.etcd.io/bbolt"
 )
 
 type Server struct {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by the GNU AGPL
 // license that can be found in the LICENSE file.
 
-package alpenhorn
+package neverlur
 
 import (
 	"crypto/ed25519"
@@ -16,13 +16,13 @@ import (
 	"github.com/davidlazar/go-crypto/encoding/base32"
 	"golang.org/x/crypto/nacl/box"
 
-	"vuvuzela.io/alpenhorn/addfriend"
-	"vuvuzela.io/alpenhorn/config"
-	"vuvuzela.io/alpenhorn/coordinator"
-	"vuvuzela.io/alpenhorn/errors"
-	"vuvuzela.io/alpenhorn/log"
-	"vuvuzela.io/alpenhorn/pkg"
-	"vuvuzela.io/alpenhorn/typesocket"
+	"github.com/oluies/neverlur/addfriend"
+	"github.com/oluies/neverlur/config"
+	"github.com/oluies/neverlur/coordinator"
+	"github.com/oluies/neverlur/errors"
+	"github.com/oluies/neverlur/log"
+	"github.com/oluies/neverlur/pkg"
+	"github.com/oluies/neverlur/typesocket"
 	"vuvuzela.io/concurrency"
 	"vuvuzela.io/crypto/bls"
 	"vuvuzela.io/crypto/ibe"

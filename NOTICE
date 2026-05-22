@@ -1,0 +1,73 @@
+Neverlur
+========
+
+Neverlur is a post-quantum fork of the Alpenhorn friend-discovery service
+for metadata-private messaging.
+
+Upstream project
+----------------
+
+This codebase derives from:
+
+  Alpenhorn
+  https://github.com/vuvuzela/alpenhorn
+
+Original authors:
+
+  Copyright (c) 2015-2019 David Lazar
+  with contributions from collaborators at MIT CSAIL.
+
+Upstream paper: David Lazar and Nickolai Zeldovich, "Alpenhorn: Bootstrapping
+Secure Communication without Leaking Metadata", OSDI 2016.
+https://davidlazar.org/papers/alpenhorn.pdf
+
+Fork
+----
+
+Neverlur is maintained at https://github.com/oluies/neverlur.
+The fork was created to migrate the friend-discovery layer to post-quantum
+cryptographic primitives (hybrid X25519+ML-KEM-768 key agreement, hybrid
+Ed25519+ML-DSA-65 signatures) while preserving the original protocol design,
+threat model, and license.
+
+All files retained from the upstream project keep their original copyright
+notices ("Copyright 2015 David Lazar. All rights reserved." and similar) and
+license headers. Modifications and new files carry their own copyright
+notices alongside the upstream notice where appropriate.
+
+License
+-------
+
+Neverlur is distributed under the GNU Affero General Public License,
+version 3.0 (AGPL-3.0), the same license as upstream Alpenhorn.
+See the LICENSE file for the full license text.
+
+Related forks
+-------------
+
+  gjallarhorn (fork of Vuvuzela, the conversation mixnet)
+  https://github.com/oluies/gjallarhorn
+
+Third-party dependencies
+------------------------
+
+This project depends on third-party libraries with their own licenses,
+including:
+
+  - golang.org/x/crypto                   BSD-3-Clause
+  - golang.org/x/net                      BSD-3-Clause
+  - google.golang.org/grpc                Apache-2.0
+  - github.com/cloudflare/circl           BSD-3-Clause (planned, for PQ primitives)
+  - github.com/davidlazar/go-crypto       Apache-2.0
+  - github.com/davidlazar/easyjson        MIT
+  - github.com/davidlazar/mapstructure    MIT
+  - github.com/boltdb/bolt                MIT
+  - github.com/dgraph-io/badger           Apache-2.0
+  - github.com/gorilla/websocket          BSD-2-Clause
+  - github.com/sirupsen/logrus            MIT
+  - github.com/mattn/go-isatty            MIT
+  - github.com/dchest/siphash             CC0-1.0
+  - vuvuzela.io/crypto                    AGPL-3.0
+  - vuvuzela.io/concurrency               AGPL-3.0
+  - vuvuzela.io/internal                  AGPL-3.0
+  - vuvuzela.io/vuvuzela                  AGPL-3.0
