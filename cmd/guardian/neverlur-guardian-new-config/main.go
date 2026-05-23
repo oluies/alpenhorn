@@ -51,6 +51,13 @@ func main() {
 		conf.Expires = conf.Created.Add(valid)
 		conf.PrevConfigHash = confHash
 		conf.Signatures = make(map[string][]byte)
+
+		// Force the v2 wire-format tag on every freshly minted config,
+		// per docs/wire-signed-config-v2.md. Without explicit
+		// MinClientVersion, a v1-only client would see no minimum-
+		// version guard and might silently mis-parse v2 fields.
+		conf.Version = config.SignedConfigVersion
+		conf.MinClientVersion = config.SignedConfigVersion
 	}
 
 	data, err := json.MarshalIndent(conf, "", "  ")

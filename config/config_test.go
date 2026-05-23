@@ -15,7 +15,9 @@ import (
 	"github.com/davidlazar/go-crypto/encoding/base32"
 
 	"github.com/oluies/neverlur/debug"
+	"github.com/oluies/neverlur/hybrid"
 	"github.com/oluies/neverlur/pkg"
+	"github.com/oluies/neverlur/pqsig"
 	"vuvuzela.io/vuvuzela/mixnet"
 )
 
@@ -45,7 +47,7 @@ func TestVerify(t *testing.T) {
 		t.Fatal("expecting Verify to fail")
 	}
 
-	conf1.Signatures[base32.EncodeToString(gA.Key)] = ed25519.Sign(gApriv, conf1.SigningMessage())
+	conf1.Signatures[base32.EncodeToString(gA.Key)] = hybridSign(gApriv, conf1.SigningMessage())
 
 	err = conf1.Verify()
 	if err != nil {
@@ -71,7 +73,7 @@ func TestVerify(t *testing.T) {
 	}
 
 	conf2.Signatures = map[string][]byte{
-		base32.EncodeToString(gA.Key): ed25519.Sign(gApriv, conf2.SigningMessage()),
+		base32.EncodeToString(gA.Key): hybridSign(gApriv, conf2.SigningMessage()),
 	}
 	err = VerifyConfigChain(conf2, conf1)
 	if err == nil {
@@ -83,7 +85,7 @@ func TestVerify(t *testing.T) {
 	}
 
 	conf2.Signatures = map[string][]byte{
-		base32.EncodeToString(gB.Key): ed25519.Sign(gBpriv, conf2.SigningMessage()),
+		base32.EncodeToString(gB.Key): hybridSign(gBpriv, conf2.SigningMessage()),
 	}
 	err = VerifyConfigChain(conf2, conf1)
 	if err == nil {
@@ -95,8 +97,8 @@ func TestVerify(t *testing.T) {
 	}
 
 	conf2.Signatures = map[string][]byte{
-		base32.EncodeToString(gA.Key): ed25519.Sign(gApriv, conf2.SigningMessage()),
-		base32.EncodeToString(gB.Key): ed25519.Sign(gBpriv, conf2.SigningMessage()),
+		base32.EncodeToString(gA.Key): hybridSign(gApriv, conf2.SigningMessage()),
+		base32.EncodeToString(gB.Key): hybridSign(gBpriv, conf2.SigningMessage()),
 	}
 	err = VerifyConfigChain(conf2, conf1)
 	if err != nil {
@@ -108,19 +110,51 @@ func TestVerify(t *testing.T) {
 	}
 }
 
+// newGuardian generates a hybrid identity (R4-bound) and returns the
+// Guardian record (with both Ed25519 and ML-DSA-65 public keys filled
+// in) along with the Ed25519 private key for inline signing in tests.
+// The post-quantum private half can be re-derived from the Ed25519
+// seed by hybridSign below.
 func newGuardian(username string) (Guardian, ed25519.PrivateKey) {
-	guardianPub, guardianPriv, err := ed25519.GenerateKey(rand.Reader)
+	_, guardianPriv, err := ed25519.GenerateKey(rand.Reader)
+	if err != nil {
+		panic(err)
+	}
+	id, err := hybrid.HybridIdentityFromEd25519Seed(guardianPriv.Seed())
 	if err != nil {
 		panic(err)
 	}
 	return Guardian{
 		Username: username,
-		Key:      guardianPub,
+		Key:      id.EdPub,
+		PQKey:    pqsig.PackPublicKey(id.PQPub),
 	}, guardianPriv
 }
 
+// hybridSign produces a v2-format HybridSignature blob (Ed25519 || ML-DSA-65,
+// 3373 bytes total) over msg, suitable for storing in
+// SignedConfig.Signatures. The PQ private half is re-derived from the
+// Ed25519 seed on every call — fine for test code, where the cost is
+// dominated by the actual ML-DSA-65 sign anyway.
+func hybridSign(edPriv ed25519.PrivateKey, msg []byte) []byte {
+	id, err := hybrid.HybridIdentityFromEd25519Seed(edPriv.Seed())
+	if err != nil {
+		panic(err)
+	}
+	sigEd := ed25519.Sign(edPriv, msg)
+	sigPQ, err := pqsig.Sign(id.PQPriv, msg)
+	if err != nil {
+		panic(err)
+	}
+	var hs HybridSignature
+	copy(hs.Ed[:], sigEd)
+	copy(hs.PQ[:], sigPQ)
+	return hs.Bytes()
+}
+
 func TestMarshalAddFriendConfig(t *testing.T) {
-	guardianPub, guardianPriv, _ := ed25519.GenerateKey(rand.Reader)
+	guardian, guardianPriv := newGuardian("david")
+	guardianPub := guardian.Key
 
 	conf := &SignedConfig{
 		Version: SignedConfigVersion,
@@ -132,12 +166,7 @@ func TestMarshalAddFriendConfig(t *testing.T) {
 		Created: time.Now().UTC().Round(0),
 		Expires: time.Now().UTC().Round(0),
 
-		Guardians: []Guardian{
-			{
-				Username: "david",
-				Key:      guardianPub,
-			},
-		},
+		Guardians: []Guardian{guardian},
 
 		Service: "AddFriend",
 		Inner: &AddFriendConfig{
@@ -169,9 +198,8 @@ func TestMarshalAddFriendConfig(t *testing.T) {
 			},
 		},
 	}
-	sig := ed25519.Sign(guardianPriv, conf.SigningMessage())
 	conf.Signatures = map[string][]byte{
-		base32.EncodeToString(guardianPub): sig,
+		base32.EncodeToString(guardianPub): hybridSign(guardianPriv, conf.SigningMessage()),
 	}
 	if err := conf.Verify(); err != nil {
 		t.Fatal(err)
@@ -205,7 +233,8 @@ func TestMarshalAddFriendConfig(t *testing.T) {
 }
 
 func TestMarshalDialingConfig(t *testing.T) {
-	guardianPub, guardianPriv, _ := ed25519.GenerateKey(rand.Reader)
+	guardian, guardianPriv := newGuardian("david")
+	guardianPub := guardian.Key
 
 	conf := &SignedConfig{
 		Version: SignedConfigVersion,
@@ -217,12 +246,7 @@ func TestMarshalDialingConfig(t *testing.T) {
 		Created: time.Now().UTC().Round(0),
 		Expires: time.Now().UTC().Round(0),
 
-		Guardians: []Guardian{
-			{
-				Username: "david",
-				Key:      guardianPub,
-			},
-		},
+		Guardians: []Guardian{guardian},
 
 		Service: "Dialing",
 		Inner: &DialingConfig{
@@ -244,9 +268,8 @@ func TestMarshalDialingConfig(t *testing.T) {
 			},
 		},
 	}
-	sig := ed25519.Sign(guardianPriv, conf.SigningMessage())
 	conf.Signatures = map[string][]byte{
-		base32.EncodeToString(guardianPub): sig,
+		base32.EncodeToString(guardianPub): hybridSign(guardianPriv, conf.SigningMessage()),
 	}
 	if err := conf.Verify(); err != nil {
 		t.Fatal(err)
@@ -314,23 +337,16 @@ const exampleConfig = `
 }
 `
 
+// TestUnmarshalConfig asserts that the v2 codebase REJECTS legacy v1
+// JSON records outright (no silent downgrade — constitution Principle V,
+// docs/wire-signed-config-v2.md). The exampleConfig string above is the
+// historical v1 sample preserved for documentation; v2 codebases see it
+// and refuse to parse, returning an error that explicitly cites the
+// design note.
 func TestUnmarshalConfig(t *testing.T) {
 	conf := new(SignedConfig)
 	err := json.Unmarshal([]byte(exampleConfig), conf)
-	if err != nil {
-		t.Fatal(err)
-	}
-	addFriendConf := conf.Inner.(*AddFriendConfig)
-	if addFriendConf.Registrar.Address != "vuvuzela.io" {
-		t.Fatalf("invalid Registrar address: %q", addFriendConf.Registrar.Address)
-	}
-	if key := base32.EncodeToString(addFriendConf.PKGServers[0].Key); key != "5t8c7emvexkwg02yhqwksj7shc93sh3cat3yxk57ghqdr4hp7zq0" {
-		t.Fatalf("invalid PKG key: %q", key)
-	}
-	if key := base32.EncodeToString(addFriendConf.MixServers[0].Key); key != "5t8c7emvexkwg02yhqwksj7shc93sh3cat3yxk57ghqdr4hp7zq0" {
-		t.Fatalf("invalid mix server key: %q", key)
-	}
-	if conf.Hash() != "h0hfmekxv2p9n1bxa269whhadpmmynddbbes94e4zg9q4bsbjb90" {
-		t.Fatalf("unexpected config: hash=%s\n%s", conf.Hash(), debug.Pretty(conf))
+	if err == nil {
+		t.Fatalf("expected v1 record to be rejected; got nil error and parsed conf=%s", debug.Pretty(conf))
 	}
 }

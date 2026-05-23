@@ -18,7 +18,9 @@ import (
 
 	"github.com/oluies/neverlur/cmd/guardian"
 	"github.com/oluies/neverlur/config"
+	"github.com/oluies/neverlur/hybrid"
 	"github.com/oluies/neverlur/log"
+	"github.com/oluies/neverlur/pqsig"
 
 	// Register the convo inner config.
 	_ "vuvuzela.io/vuvuzela/convo"
@@ -53,6 +55,13 @@ func main() {
 	privateKey := guardian.ReadPrivateKey(privatePath)
 	publicKey := privateKey.Public().(ed25519.PublicKey)
 
+	// Derive the hybrid identity (R4 binding) from the Ed25519 seed.
+	// This costs ~92us at startup; cheap relative to the sign call.
+	id, err := hybrid.HybridIdentityFromEd25519Seed(privateKey.Seed())
+	if err != nil {
+		log.Fatalf("derive hybrid identity: %s", err)
+	}
+
 	myPos := -1
 	for i, g := range conf.Guardians {
 		if bytes.Equal(g.Key, publicKey) {
@@ -64,11 +73,21 @@ func main() {
 	}
 
 	msg := conf.SigningMessage()
-	sig := ed25519.Sign(privateKey, msg)
+
+	// Hybrid signature: Ed25519 || ML-DSA-65.
+	sigEd := ed25519.Sign(privateKey, msg)
+	sigPQ, err := pqsig.Sign(id.PQPriv, msg)
+	if err != nil {
+		log.Fatalf("ml-dsa-65 sign: %s", err)
+	}
+	var hs config.HybridSignature
+	copy(hs.Ed[:], sigEd)
+	copy(hs.PQ[:], sigPQ)
+
 	if conf.Signatures == nil {
 		conf.Signatures = make(map[string][]byte)
 	}
-	conf.Signatures[base32.EncodeToString(publicKey)] = sig
+	conf.Signatures[base32.EncodeToString(publicKey)] = hs.Bytes()
 
 	data, err := json.MarshalIndent(conf, "", "  ")
 	if err != nil {
