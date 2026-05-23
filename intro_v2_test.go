@@ -24,6 +24,12 @@ import (
 // makeV2 produces an introductionV2 with deterministic-but-arbitrary
 // content (everything but signatures and ServerMultisig populated).
 // Used by the wire-format and sign/verify tests below.
+//
+// The MLKEMCiphertext field is populated by encapsulating to the
+// recipient's long-term ML-KEM-768 public key; the test passes `id`'s
+// own long-term ML-KEM pub as the "recipient" so the test does not
+// need a second identity. In real use the sender encapsulates to the
+// peer's long-term ML-KEM key looked up via PKG.
 func makeV2(t *testing.T, id *hybrid.HybridIdentity) *introductionV2 {
 	t.Helper()
 	intro := new(introductionV2)
@@ -33,11 +39,12 @@ func makeV2(t *testing.T, id *hybrid.HybridIdentity) *introductionV2 {
 	for i := range intro.DHPublicKey {
 		intro.DHPublicKey[i] = byte((i * 3) & 0xff)
 	}
-	pk, _, err := pqkem.GenerateKey()
+	// Encapsulate to id's own long-term ML-KEM pub for test convenience.
+	ct, _, err := pqkem.Encapsulate(id.MLKEMPub)
 	if err != nil {
-		t.Fatalf("pqkem.GenerateKey: %v", err)
+		t.Fatalf("pqkem.Encapsulate: %v", err)
 	}
-	copy(intro.MLKEMPublicKey[:], pqkem.PackPublicKey(pk))
+	copy(intro.MLKEMCiphertext[:], ct)
 	intro.DialingRound = 12345
 	copy(intro.LongTermKey[:], id.EdPub)
 	copy(intro.LongTermKeyPQ[:], pqsig.PackPublicKey(id.PQPub))

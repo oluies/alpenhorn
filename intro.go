@@ -36,17 +36,24 @@ const (
 	// by the v2 unmarshaler.
 	introductionV2Version byte = 2
 
-	// SizeIntroV2 is the fixed on-wire size of an introductionV2 in bytes.
-	// See docs/wire-introduction-v2.md for the field-by-field layout.
+	// SizeIntroV2 is the fixed on-wire size of an introductionV2 in bytes
+	// under the option-F static-ephemeral hybrid design (see
+	// docs/wire-introduction-v2.md for the field-by-field layout and the
+	// design discussion).
 	//
 	// Layout: 1 (Version) + 64 (Username) + 32 (DHPublicKey)
-	//       + pqkem.PublicKeySize (1184)
+	//       + pqkem.CiphertextSize (1088)  // encap'd to recipient's LT ML-KEM pub
 	//       + 4 (DialingRound) + 32 (LongTermKey)
 	//       + pqsig.PublicKeySize (1952)
 	//       + 64 (Signature) + pqsig.SignatureSize (3309)
-	//       + 32 (ServerMultisig) + 21 (reserved padding)
-	//       = 6695.
-	SizeIntroV2 = 1 + 64 + 32 + pqkem.PublicKeySize + 4 + 32 + pqsig.PublicKeySize + 64 + pqsig.SignatureSize + 32 + 21
+	//       + 32 (ServerMultisig) + 2 (reserved padding)
+	//       = 6580.
+	//
+	// Note: the SENDER's long-term ML-KEM-768 pub is NOT carried in the
+	// intro; recipients look it up from the PKG-published identity
+	// record. The MLKEMCiphertext below was encapsulated to the
+	// RECIPIENT's long-term ML-KEM pub by the sender.
+	SizeIntroV2 = 1 + 64 + 32 + pqkem.CiphertextSize + 4 + 32 + pqsig.PublicKeySize + 64 + pqsig.SignatureSize + 32 + 2
 
 	// introductionSigPrefix is the leading domain separator of the byte
 	// string covered by both Signature and SignaturePQ.
@@ -117,26 +124,31 @@ var ErrIntroV2Version = errors.New("neverlur: introduction is not v2")
 // ErrIntroV2Size indicates a wrong-sized v2 introduction blob.
 var ErrIntroV2Size = errors.New("neverlur: introduction v2 wrong size")
 
-// introductionV2 is the hybrid post-quantum form of an Alpenhorn add-friend
-// introduction. See docs/wire-introduction-v2.md for the wire layout and
-// docs/wire-introduction-v2.md#signed-message for the signed-message
-// construction. Field order and sizes are part of the wire format; do
-// not reorder.
+// introductionV2 is the hybrid post-quantum form of an Alpenhorn
+// add-friend introduction under the option-F static-ephemeral design.
+// See docs/wire-introduction-v2.md for the wire layout, the signed-
+// message construction, and the design history that led here. Field
+// order and sizes are part of the wire format; do not reorder.
+//
+// MLKEMCiphertext carries an ML-KEM-768 ciphertext encapsulated by the
+// sender to the RECIPIENT's long-term ML-KEM-768 public key (looked up
+// via the PKG). The recipient decapsulates with its own long-term
+// ML-KEM private key to recover the sender's chosen shared secret.
 //
 // Reserved is zero-padding so the encoded length is a multiple of 7,
 // which the IBE chunking helper prefers.
 type introductionV2 struct {
-	Version        byte
-	Username       [64]byte
-	DHPublicKey    [32]byte
-	MLKEMPublicKey [pqkem.PublicKeySize]byte
-	DialingRound   uint32
-	LongTermKey    [32]byte
-	LongTermKeyPQ  [pqsig.PublicKeySize]byte
-	Signature      [64]byte
-	SignaturePQ    [pqsig.SignatureSize]byte
-	ServerMultisig [32]byte
-	Reserved       [21]byte
+	Version         byte
+	Username        [64]byte
+	DHPublicKey     [32]byte
+	MLKEMCiphertext [pqkem.CiphertextSize]byte
+	DialingRound    uint32
+	LongTermKey     [32]byte
+	LongTermKeyPQ   [pqsig.PublicKeySize]byte
+	Signature       [64]byte
+	SignaturePQ     [pqsig.SignatureSize]byte
+	ServerMultisig  [32]byte
+	Reserved        [2]byte
 }
 
 // MarshalBinary returns the fixed-width SizeIntroV2-byte canonical
@@ -253,12 +265,12 @@ func (i *introductionV2) signedMsg() []byte {
 	keyHash := sha512.Sum512(append(append([]byte{}, i.LongTermKey[:]...), i.LongTermKeyPQ[:]...))
 
 	buf := new(bytes.Buffer)
-	buf.Grow(len(introductionSigPrefix) + 1 + 64 + 32 + pqkem.PublicKeySize + 4 + 64)
+	buf.Grow(len(introductionSigPrefix) + 1 + 64 + 32 + pqkem.CiphertextSize + 4 + 64)
 	buf.WriteString(introductionSigPrefix)
 	buf.WriteByte(i.Version)
 	buf.Write(i.Username[:])
 	buf.Write(i.DHPublicKey[:])
-	buf.Write(i.MLKEMPublicKey[:])
+	buf.Write(i.MLKEMCiphertext[:])
 	binary.Write(buf, binary.BigEndian, i.DialingRound)
 	buf.Write(keyHash[:])
 	return buf.Bytes()

@@ -6,12 +6,23 @@ package pqkem
 
 import (
 	"crypto/rand"
+	"crypto/sha512"
 	"errors"
 	"fmt"
 	"io"
 
 	"github.com/cloudflare/circl/kem/mlkem/mlkem768"
+	"golang.org/x/crypto/hkdf"
 )
+
+// bindingInfo is the HKDF info string that ties the ML-KEM-768 keygen
+// seed to the Ed25519 seed, analogous to pqsig.bindingInfo for ML-DSA-65
+// (research.md R4 extended to the long-term ML-KEM key required by the
+// static-ephemeral hybrid design in docs/wire-introduction-v2.md).
+//
+// Changing this string is a wire-incompatible change: every existing
+// hybrid identity becomes unrecognizable on the long-term ML-KEM half.
+const bindingInfo = "neverlur/v1 pq-kem-id-binding"
 
 // Re-export size constants so callers do not need to import CIRCL directly.
 const (
@@ -57,6 +68,33 @@ func NewKeyFromSeed(seed []byte) (*PublicKey, *PrivateKey, error) {
 	}
 	pk, sk := mlkem768.NewKeyFromSeed(seed)
 	return pk, sk, nil
+}
+
+// DeriveFromEd25519Seed implements the long-term ML-KEM-768 half of the
+// hybrid identity binding (docs/wire-introduction-v2.md option F /
+// research.md R4 extended). It returns the ML-KEM-768 keypair
+// deterministically bound to the supplied Ed25519 seed via HKDF-SHA512.
+//
+// edSeed MUST be the 32-byte Ed25519 seed (the first 32 bytes of the
+// 64-byte Ed25519 private key). The derivation domain-separator
+// bindingInfo distinguishes this binding from the analogous ML-DSA-65
+// binding in pqsig.DeriveFromEd25519Seed, so the two long-term PQ
+// keypairs of a single hybrid identity are independent in seed space
+// despite being derived from the same Ed25519 seed.
+//
+// This is the only place where long-term ML-KEM-768 seeds are derived
+// from classical material. Every hybrid identity in the deployment
+// goes through here.
+func DeriveFromEd25519Seed(edSeed []byte) (*PublicKey, *PrivateKey, error) {
+	if len(edSeed) != 32 {
+		return nil, nil, fmt.Errorf("pqkem: ed25519 seed length %d, want 32", len(edSeed))
+	}
+	r := hkdf.New(sha512.New, edSeed, nil, []byte(bindingInfo))
+	mlkemSeed := make([]byte, KeySeedSize)
+	if _, err := io.ReadFull(r, mlkemSeed); err != nil {
+		return nil, nil, fmt.Errorf("pqkem: hkdf expand: %w", err)
+	}
+	return NewKeyFromSeed(mlkemSeed)
 }
 
 // Encapsulate produces a ciphertext + 32-byte shared secret addressed to pk.

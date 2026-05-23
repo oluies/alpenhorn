@@ -56,6 +56,48 @@ var (
 	ErrEmptyContext = errors.New("hybrid: context label must not be empty")
 )
 
+// CombineKEMConcat is the variable-length-PQ-input variant of CombineKEM,
+// added to support the option-F static-ephemeral hybrid design in
+// docs/wire-introduction-v2.md where each side has TWO ML-KEM shared
+// secrets per friendship (ssOutgoing and ssIncoming). The caller
+// concatenates the two 32-byte secrets in canonical order and hands the
+// 64-byte blob to this function as ssMLKEM.
+//
+// The function accepts any non-empty ssMLKEM blob; it is the caller's
+// responsibility to enforce the structural invariant (currently
+// 2 × 32 = 64 bytes). Future hybrids that mix in more or fewer PQ
+// secrets reuse this entry point with a different blob length.
+//
+// All other arguments and security properties match CombineKEM.
+func CombineKEMConcat(context string, transcript, ssX25519, ssMLKEM []byte) (*[SessionSecretSize]byte, error) {
+	if context == "" {
+		return nil, ErrEmptyContext
+	}
+	if len(ssX25519) != X25519SharedSize {
+		return nil, ErrInvalidShareLength
+	}
+	if len(ssMLKEM) == 0 {
+		return nil, ErrInvalidShareLength
+	}
+	if len(transcript) == 0 {
+		return nil, ErrEmptyTranscript
+	}
+
+	saltSum := sha512.Sum512(transcript)
+	ikm := make([]byte, 0, len(ssX25519)+len(ssMLKEM))
+	ikm = append(ikm, ssX25519...)
+	ikm = append(ikm, ssMLKEM...)
+
+	info := []byte(hkdfInfoPrefix + context)
+	r := hkdf.New(sha512.New, ikm, saltSum[:], info)
+
+	out := new([SessionSecretSize]byte)
+	if _, err := io.ReadFull(r, out[:]); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CombineKEM derives a SessionSecretSize-byte session secret from a
 // classical X25519 shared secret and an ML-KEM-768 shared secret, binding
 // both to the supplied transcript and to a domain-separation context label.
