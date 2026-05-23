@@ -86,17 +86,17 @@ This is a single Go module at the repository root. Test files live next to sourc
 ### Tests for User Story 1 (write first; ensure failing)
 
 - [ ] T022 [P] [US1] Write `addfriend_e2e_test.go` `TestE2EHybridFriendRequest` — full friend-request through in-process coordinator/PKG/mixer/CDN; asserts introduction v2 byte layout and keywheel seed equals independent combiner output
-- [ ] T023 [P] [US1] Write `keywheel/keywheel_test.go::TestKeywheelHybridSeed` — feeds a known `(ssX25519, ssMLKEM, transcript)` tuple through `hybrid.CombineKEM(ContextKeywheelSeed, …)` and asserts the wheel's `SessionKey` for round R is byte-stable across builds
+- [X] T023 [P] [US1] Write `keywheel/keywheel_test.go::TestKeywheelHybridSeed` — feeds a known `(ssX25519, ssMLKEM, transcript)` tuple through `hybrid.CombineKEM(ContextKeywheelSeed, …)` and asserts the wheel's `SessionKey` for round R is byte-stable across builds
 
 ### Implementation for User Story 1
 
-- [ ] T024 [US1] Extend `sentFriendRequest` in `friendrequest.go`: add `MLKEMPublicKey mlkem768.PublicKey` and `MLKEMPrivateKey mlkem768.PrivateKey` next to the existing `DHPublicKey`/`DHPrivateKey`; update easyjson tags
-- [ ] T025 [US1] Extend `IncomingFriendRequest` in `friendrequest.go`: add `MLKEMCiphertext []byte` carrying the recipient's encapsulation over the initiator's ML-KEM public key
-- [ ] T026 [US1] Replace `OutgoingFriendRequest.ExpectedKey ed25519.PublicKey` with `ExpectedIdentity *hybrid.HybridIdentityPublic` in `friendrequest.go`; update all call sites
+- [X] T024 [US1] Extend `sentFriendRequest` in `friendrequest.go`: add `MLKEMPublicKey mlkem768.PublicKey` and `MLKEMPrivateKey mlkem768.PrivateKey` next to the existing `DHPublicKey`/`DHPrivateKey`; update easyjson tags
+- [X] T025 [US1] Extend `IncomingFriendRequest` in `friendrequest.go`: add `MLKEMCiphertext []byte` carrying the recipient's encapsulation over the initiator's ML-KEM public key
+- [X] T026 [US1] Replace `OutgoingFriendRequest.ExpectedKey ed25519.PublicKey` with `ExpectedIdentity *hybrid.HybridIdentityPublic` in `friendrequest.go`; update all call sites
 - [ ] T027 [US1] In `addfriend.go::genIntro`, generate both X25519 (`box.GenerateKey`) and ML-KEM-768 (`pqkem.GenerateKey`) ephemeral pairs; write both public halves into `introductionV2`
 - [ ] T028 [US1] In `addfriend.go::newFriend`, replace the `box.Precompute` call with: X25519 ECDH via `curve25519.X25519`, ML-KEM `Decapsulate`, then `hybrid.CombineKEM(ContextKeywheelSeed, transcript, ssX25519, ssMLKEM)`; feed the 32-byte result into `keywheel.Wheel.Put`
-- [ ] T029 [US1] Build the transcript helper `transcriptForKeywheelSeed(initiatorID, responderID, dialingRound, …) []byte` colocated in `addfriend.go` (single use; not yet promoted to a shared package)
-- [ ] T030 [US1] Update `keywheel/keywheel.go` doc comment to state that the input secret to `Put` MUST come from `hybrid.CombineKEM` post-migration; add a short `// Pre-condition:` comment above `Put`
+- [X] T029 [US1] Build the transcript helper `transcriptForKeywheelSeed(initiatorID, responderID, dialingRound, …) []byte` colocated in `addfriend.go` (single use; not yet promoted to a shared package)
+- [X] T030 [US1] Update `keywheel/keywheel.go` doc comment to state that the input secret to `Put` MUST come from `hybrid.CombineKEM` post-migration; add a short `// Pre-condition:` comment above `Put`
 - [ ] T031 [US1] Regenerate `client_json.go` and `keywheel/keywheel_easyjson.go` (`go generate ./...`) to pick up new struct fields
 - [ ] T032 [US1] Run `TestE2EHybridFriendRequest` and `TestKeywheelHybridSeed` — both MUST now pass
 
