@@ -2,7 +2,8 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    # Fire on master AND on every feature branch (the PQ migration
+    # branches under task/ and ###-* need CI feedback before PR review).
   pull_request:
 
 permissions:
@@ -44,6 +45,15 @@ jobs:
         continue-on-error: true
         run: go vet ./...
 
+      - name: Test PQ foundations (verbose)
+        # Run the four bn256-free PQ foundation packages with -v so
+        # KAT pass/skip status is visible in CI logs. These packages
+        # are also covered by the broader unit-test step below; this
+        # step exists for signal visibility on PQ-migration PRs.
+        run: |
+          go test -v -race -count=1 \
+            ./pqkem ./pqsig ./hybrid ./keywheel
+
       - name: Test (unit)
         run: |
           pkgs=$(go list ./... | grep -v '^github.com/oluies/neverlur$')
@@ -52,6 +62,17 @@ jobs:
       - name: Test (integration)
         continue-on-error: true
         run: go test -race -count=1 -timeout 5m github.com/oluies/neverlur
+
+      - name: Benchmark smoke (PQ foundations)
+        # Run the foundational-package benchmarks once with a short
+        # benchtime to confirm they execute without panicking. Does
+        # NOT gate on numbers - the SC-007 1.25x baseline gate kicks
+        # in once benchmarks/baseline-pre-pq.txt is populated with
+        # real pre-migration numbers (see file header).
+        continue-on-error: true
+        run: |
+          go test -run=^$ -bench=. -benchtime=200ms \
+            ./pqkem ./pqsig ./hybrid
 
   lint:
     name: golangci-lint
