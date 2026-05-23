@@ -10,3 +10,7 @@
 # Build artifacts
 *.test
 *.out
+
+# Go workspace (per-developer local config; see docs/local-development.md)
+go.work
+go.work.sum
