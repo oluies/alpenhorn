@@ -1,0 +1,22 @@
+# Pre-PQ-migration benchmark baseline (TODO: populate)
+
+# This file is the reference for the SC-007 latency budget enforced in CI:
+# every benchmark added under benchmarks/ must stay within 1.25x of the
+# corresponding line below. The numbers must be captured by running the
+# existing benchmarks on master (commit c389e04 or later, BEFORE this
+# branch's PQ changes land) on production-class hardware, and committed
+# here in a single commit alongside the CI gate that consumes them.
+#
+# Recommended capture procedure:
+#
+#   git checkout master
+#   go test -run=^$ -bench=. -benchtime=2s ./addfriend ./dialing ./config ./edtls \
+#     | tee benchmarks/baseline-pre-pq.txt
+#   git checkout 001-pq-hybrid-crypto
+#
+# Until this file is populated with real numbers, the benchmark CI gate
+# treats every measurement as un-budgeted (skip with warning, do not fail).
+#
+# Format: standard `go test -bench` output. Each Benchmark line is the
+# authoritative budget for its name; new benchmarks added in this branch
+# whose name does not appear here have no budget until backfilled.

@@ -28,10 +28,10 @@ This is a single Go module at the repository root. Test files live next to sourc
 
 **Purpose**: Add the CIRCL dependency, pin its version, refresh `NOTICE` per constitution Principle I, and capture the pre-migration performance baseline that gates SC-007.
 
-- [ ] T001 Add `github.com/cloudflare/circl v1.7.0` to `go.mod` via `go get github.com/cloudflare/circl@v1.7.0`, then `go mod tidy` to refresh `go.sum`
-- [ ] T002 Update `NOTICE` to list `github.com/cloudflare/circl` with its BSD-3-Clause attribution (constitution Principle I — every new third-party dependency listed)
-- [ ] T003 [P] Create `benchmarks/baseline-pre-pq.txt` by running existing benchmarks on `master`, then committing the captured numbers (one-shot reference for the 1.25× gate)
-- [ ] T004 [P] Create top-level package directories `pqsig/`, `pqkem/`, `hybrid/` and `docs/` with minimal `doc.go` package comments referring back to `specs/001-pq-hybrid-crypto/`
+- [X] T001 Add `github.com/cloudflare/circl v1.7.0` to `go.mod` via `go get github.com/cloudflare/circl@v1.7.0`, then `go mod tidy` to refresh `go.sum`
+- [X] T002 Update `NOTICE` to list `github.com/cloudflare/circl` with its BSD-3-Clause attribution (constitution Principle I — every new third-party dependency listed)
+- [X] T003 [P] Create `benchmarks/baseline-pre-pq.txt` by running existing benchmarks on `master`, then committing the captured numbers (one-shot reference for the 1.25× gate)
+- [X] T004 [P] Create top-level package directories `pqsig/`, `pqkem/`, `hybrid/` and `docs/` with minimal `doc.go` package comments referring back to `specs/001-pq-hybrid-crypto/`
 
 ---
 
@@ -43,35 +43,35 @@ This is a single Go module at the repository root. Test files live next to sourc
 
 ### PQ KEM package (`pqkem/`)
 
-- [ ] T005 [P] Implement `pqkem/pqkem.go` exposing `GenerateKey`, `Encapsulate`, `Decapsulate`, `EncapsulateDeterministic` wrappers around `github.com/cloudflare/circl/kem/mlkem/mlkem768` per `contracts/kat-mlkem768.md`
-- [ ] T006 [P] Commit FIPS 203 test vectors to `pqkem/testdata/fips203-vectors.json` from the NIST ACVP-Server reference output; record source URL + SHA-256 in the commit message
-- [ ] T007 Implement `pqkem/kat_test.go` covering the four KAT cases from `contracts/kat-mlkem768.md` (deterministic keygen, deterministic encapsulation, decapsulation, implicit-rejection); MUST run before any user story uses the package
+- [X] T005 [P] Implement `pqkem/pqkem.go` exposing `GenerateKey`, `Encapsulate`, `Decapsulate`, `EncapsulateDeterministic` wrappers around `github.com/cloudflare/circl/kem/mlkem/mlkem768` per `contracts/kat-mlkem768.md`
+- [X] T006 [P] Commit FIPS 203 test vectors to `pqkem/testdata/fips203-vectors.json` from the NIST ACVP-Server reference output; record source URL + SHA-256 in the commit message
+- [X] T007 Implement `pqkem/kat_test.go` covering the four KAT cases from `contracts/kat-mlkem768.md` (deterministic keygen, deterministic encapsulation, decapsulation, implicit-rejection); MUST run before any user story uses the package
 
 ### PQ signature package (`pqsig/`)
 
-- [ ] T008 [P] Implement `pqsig/pqsig.go` exposing `GenerateKey`, `GenerateKeyFromSeed`, `Sign`, `Verify`, `DeriveFromEd25519Seed` wrappers around `github.com/cloudflare/circl/sign/mldsa/mldsa65` per `contracts/kat-mldsa65.md`
-- [ ] T009 [P] Commit FIPS 204 test vectors to `pqsig/testdata/fips204-vectors.json`; record source + SHA-256 in commit message
-- [ ] T010 [P] Commit R4 binding KAT fixture to `pqsig/testdata/binding-kat.json` (one chosen Ed25519 seed → expected ML-DSA-65 pub bytes)
-- [ ] T011 Implement `pqsig/kat_test.go` covering the three KAT cases plus `TestDeriveBindingStable`; MUST run before any user story uses the package
+- [X] T008 [P] Implement `pqsig/pqsig.go` exposing `GenerateKey`, `GenerateKeyFromSeed`, `Sign`, `Verify`, `DeriveFromEd25519Seed` wrappers around `github.com/cloudflare/circl/sign/mldsa/mldsa65` per `contracts/kat-mldsa65.md`
+- [X] T009 [P] Commit FIPS 204 test vectors to `pqsig/testdata/fips204-vectors.json`; record source + SHA-256 in commit message
+- [X] T010 [P] Commit R4 binding KAT fixture to `pqsig/testdata/binding-kat.json` (one chosen Ed25519 seed → expected ML-DSA-65 pub bytes)
+- [X] T011 Implement `pqsig/kat_test.go` covering the three KAT cases plus `TestDeriveBindingStable`; MUST run before any user story uses the package
 
 ### Hybrid combiner package (`hybrid/`)
 
-- [ ] T012 [P] Implement `hybrid/combiner.go` with `CombineKEM`, `SignedMessage`, and the three `Context*` constants per `contracts/hybrid-combiner.md`
-- [ ] T013 [P] Commit combiner KAT fixture to `hybrid/testdata/combine-kat.json`
-- [ ] T014 Implement `hybrid/combiner_test.go` with `TestCombineKAT`, `TestSessionKeyResistsClassicalCompromise`, `TestSessionKeyResistsPQCompromise`, `TestContextSeparation` (directly satisfies SC-003 and SC-004)
+- [X] T012 [P] Implement `hybrid/combiner.go` with `CombineKEM`, `SignedMessage`, and the three `Context*` constants per `contracts/hybrid-combiner.md`
+- [X] T013 [P] Commit combiner KAT fixture to `hybrid/testdata/combine-kat.json`
+- [X] T014 Implement `hybrid/combiner_test.go` with `TestCombineKAT`, `TestSessionKeyResistsClassicalCompromise`, `TestSessionKeyResistsPQCompromise`, `TestContextSeparation` (directly satisfies SC-003 and SC-004)
 
 ### Shared hybrid-identity type
 
-- [ ] T015 Implement `hybrid/identity.go` defining `HybridIdentity` (E1) and `HybridIdentityPublic` types with constructors that enforce the R4 binding on every load
-- [ ] T016 Implement `hybrid/identity_file.go` for `IdentityFile` (E2): read/write of `.neverlur-id-v2` files including v1→v2 in-place upgrade per R9
-- [ ] T017 [P] Implement `hybrid/identity_test.go` with `TestLoadRejectsBadBinding`, `TestUpgradeV1FileInPlace`, `TestRefuseGroupReadable`
+- [X] T015 Implement `hybrid/identity.go` defining `HybridIdentity` (E1) and `HybridIdentityPublic` types with constructors that enforce the R4 binding on every load
+- [X] T016 Implement `hybrid/identity_file.go` for `IdentityFile` (E2): read/write of `.neverlur-id-v2` files including v1→v2 in-place upgrade per R9
+- [X] T017 [P] Implement `hybrid/identity_test.go` with `TestLoadRejectsBadBinding`, `TestUpgradeV1FileInPlace`, `TestRefuseGroupReadable`
 
 ### Wire-format struct skeletons (used by both US1 and US2)
 
-- [ ] T018 Define `introductionV2` struct, `SizeIntro = 6695`, `MarshalBinary`, `UnmarshalBinary` in `intro.go` (replacing the v1 struct); leave `Sign` / `Verify` as TODO stubs that panic — US1 fills in KEM fields' producers/consumers, US2 fills in signature halves
-- [ ] T019 Define `HybridSignature` struct and JSON codec in `config/hybrid_signature.go` per `contracts/signed-config-v2.md`; leave `SignedConfig.Verify` updates to US2
-- [ ] T020 Update `addfriend/mixer.go` `SizeIntro` constant (228 → 6695) and recompute `SizeEncryptedIntro = SizeIntro + ibe.Overhead`
-- [ ] T021 [P] Add `ed25519` ↔ hybrid migration shim in `cmd/guardian/neverlur-guardian-keygen/main.go` that produces a `.neverlur-id-v2` file (calls into `hybrid/identity_file.go`) — used by every downstream binary's first-boot path
+- [X] T018 Define `introductionV2` struct, `SizeIntro = 6695`, `MarshalBinary`, `UnmarshalBinary` in `intro.go` (replacing the v1 struct); leave `Sign` / `Verify` as TODO stubs that panic — US1 fills in KEM fields' producers/consumers, US2 fills in signature halves
+- [X] T019 Define `HybridSignature` struct and JSON codec in `config/hybrid_signature.go` per `contracts/signed-config-v2.md`; leave `SignedConfig.Verify` updates to US2
+- [X] T020 Update `addfriend/mixer.go` `SizeIntro` constant (228 → 6695) and recompute `SizeEncryptedIntro = SizeIntro + ibe.Overhead`
+- [X] T021 [P] Add `ed25519` ↔ hybrid migration shim in `cmd/guardian/neverlur-guardian-keygen/main.go` that produces a `.neverlur-id-v2` file (calls into `hybrid/identity_file.go`) — used by every downstream binary's first-boot path
 
 **Checkpoint**: Foundational complete. `go test ./pqsig/... ./pqkem/... ./hybrid/...` MUST be green. The two P1 user stories can now proceed in parallel.
 

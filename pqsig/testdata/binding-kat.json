@@ -1,0 +1,9 @@
+{
+  "_comment": "Deterministic binding KAT for pqsig.DeriveFromEd25519Seed (research.md R4). The Ed25519 seed below is a fixed, non-secret test value. Re-running DeriveFromEd25519Seed on this seed MUST produce an ML-DSA-65 public/private keypair whose canonical packed bytes hash to the SHA-256 values recorded here. If any of these values change after a CIRCL upgrade, the upgrade is wire-incompatible and must be treated as a hybrid-identity break across the deployment.",
+  "_info_string": "neverlur/v1 pq-id-binding (must match pqsig.bindingInfo)",
+  "ed25519_seed_hex": "6e657665726c75722d62696e64696e672d6b61742d736565642d763121212121",
+  "expected_pq_pub_sha256": "55f318290b747c86c368766a71798002a8845345a0c4e70a8dd60eab532e84c4",
+  "expected_pq_pub_size": "1952",
+  "expected_pq_sk_sha256": "757b9bf5db785ec4db577234e8d4228458ef41d45ac9729a2338ae65d5624163",
+  "expected_pq_sk_size": "4032"
+}

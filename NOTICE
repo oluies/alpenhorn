@@ -57,7 +57,7 @@ including:
   - golang.org/x/crypto                   BSD-3-Clause
   - golang.org/x/net                      BSD-3-Clause
   - google.golang.org/grpc                Apache-2.0
-  - github.com/cloudflare/circl           BSD-3-Clause (planned, for PQ primitives)
+  - github.com/cloudflare/circl           BSD-3-Clause (PQ primitives: ML-KEM-768, ML-DSA-65)
   - github.com/davidlazar/go-crypto       Apache-2.0
   - github.com/davidlazar/easyjson        MIT
   - github.com/davidlazar/mapstructure    MIT
