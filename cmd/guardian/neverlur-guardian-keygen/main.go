@@ -55,7 +55,7 @@ func main() {
 		checkOverwrite(*hybridOutFlag)
 	}
 
-	fmt.Fprint(os.Stdout, inspirationalMessage)
+	_, _ = fmt.Fprint(os.Stdout, inspirationalMessage)
 	pw := confirmPassphrase()
 	fmt.Println()
 

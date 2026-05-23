@@ -113,9 +113,12 @@ func WriteIdentityFile(path string, id *HybridIdentity) error {
 	if err != nil {
 		return fmt.Errorf("hybrid: create identity file: %w", err)
 	}
-	defer out.Close()
-	if _, err := out.Write(data); err != nil {
-		return fmt.Errorf("hybrid: write identity file: %w", err)
+	if _, werr := out.Write(data); werr != nil {
+		_ = out.Close()
+		return fmt.Errorf("hybrid: write identity file: %w", werr)
+	}
+	if cerr := out.Close(); cerr != nil {
+		return fmt.Errorf("hybrid: close identity file: %w", cerr)
 	}
 	return nil
 }
