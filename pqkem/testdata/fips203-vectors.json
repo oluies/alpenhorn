@@ -1,0 +1,7 @@
+{
+  "_comment": "PLACEHOLDER. This file must be replaced with real FIPS 203 ML-KEM-768 known-answer test vectors before the constitution Quality Gate ('Crypto PRs require KAT test additions; review must explicitly confirm KATs were checked against an authoritative source') can be satisfied.",
+  "_source": "Authoritative vectors should be drawn from NIST ACVP-Server reference output for ML-KEM-768. See https://github.com/usnistgov/ACVP-Server for the canonical source. The expected commit message when this file is populated must record: (a) the upstream artifact URL, (b) the SHA-256 of the downloaded vector file, and (c) the date of retrieval.",
+  "_status": "placeholder",
+  "_note_on_circl_acvp": "CIRCL itself ships gzipped NIST ACVP vectors under sign/mldsa/testdata/ and an analogous location for ML-KEM. CIRCL's own TestACVP suite verifies primitive conformance against those vectors on every CIRCL release. For Neverlur, we have two options: (1) re-commit a frozen copy of NIST vectors here, or (2) treat CIRCL's own ACVP test as the authoritative KAT and have our kat_test.go assert round-trip and wrapper-level invariants only. The decision is recorded in research.md when the placeholder is replaced.",
+  "vectors": []
+}

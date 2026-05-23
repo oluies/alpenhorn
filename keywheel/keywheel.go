@@ -47,6 +47,23 @@ func (rs roundSecret) getSecret(round uint32) *[32]byte {
 	return secret
 }
 
+// Put records the initial 32-byte session secret for a friendship. The
+// wheel then ratchets it forward per round via the HMAC-SHA256 chain
+// defined by hash1/hash3.
+//
+// Post-PQ-migration requirement: the secret passed here MUST be derived
+// from the hybrid combiner (hybrid.CombineKEM with the
+// ContextKeywheelSeed label), not from a raw X25519 ECDH shared secret.
+// The top-level neverlur package's hybridKeywheelSeed helper is the
+// canonical producer. Feeding a classical-only secret degrades the
+// friendship to pre-PQ confidentiality and is a constitutional
+// violation (Principle III: Post-Quantum Is Hybrid, Never Pure).
+//
+// The wheel itself does not (and cannot) verify the construction of
+// the secret it is handed; this responsibility lives with the caller.
+// The TestKeywheelHybridSeed test in this package documents the
+// expected derivation path and asserts byte-stable output for a
+// recorded (ssX25519, ssMLKEM, transcript) tuple.
 func (w *Wheel) Put(username string, round uint32, secret *[32]byte) {
 	w.mu.Lock()
 	if w.secrets == nil {

@@ -16,6 +16,9 @@ import (
 	"time"
 
 	"github.com/davidlazar/go-crypto/encoding/base32"
+
+	"github.com/oluies/neverlur/hybrid"
+	"github.com/oluies/neverlur/pqsig"
 )
 
 func TestServer(t *testing.T) {
@@ -30,10 +33,16 @@ func TestServer(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	_ = guardian1Private
+	// Derive the hybrid identity so the Guardian record carries both
+	// halves; v2 Validate rejects records with missing PQKey.
+	guardian1ID, err := hybrid.HybridIdentityFromEd25519Seed(guardian1Private.Seed())
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	startingConfig := &SignedConfig{
-		Version: 1,
+		Version:          SignedConfigVersion,
+		MinClientVersion: SignedConfigVersion,
 
 		Created: time.Now(),
 		Expires: time.Now().Add(24 * time.Hour),
@@ -56,6 +65,7 @@ func TestServer(t *testing.T) {
 			{
 				Username: "guardian1",
 				Key:      guardian1Public,
+				PQKey:    pqsig.PackPublicKey(guardian1ID.PQPub),
 			},
 		},
 	}
@@ -94,7 +104,8 @@ func TestServer(t *testing.T) {
 	}
 
 	newConfig := &SignedConfig{
-		Version: 1,
+		Version:          SignedConfigVersion,
+		MinClientVersion: SignedConfigVersion,
 
 		Created: time.Now(),
 		Expires: time.Now().Add(24 * time.Hour),
@@ -114,6 +125,17 @@ func TestServer(t *testing.T) {
 				Key:     guardian1Public,
 			},
 		},
+
+		// The same guardian as startingConfig, carried over so the
+		// chain-verification path on the server has guardians to check
+		// against.
+		Guardians: []Guardian{
+			{
+				Username: "guardian1",
+				Key:      guardian1Public,
+				PQKey:    pqsig.PackPublicKey(guardian1ID.PQPub),
+			},
+		},
 	}
 
 	{
@@ -124,10 +146,19 @@ func TestServer(t *testing.T) {
 		}
 	}
 
-	// Sign the new config and try again.
+	// Sign the new config and try again. Hybrid signature: 64 bytes
+	// Ed25519 || 3309 bytes ML-DSA-65.
 	newConfig.Signatures = make(map[string][]byte)
 	gk := base32.EncodeToString(guardian1Public)
-	newConfig.Signatures[gk] = ed25519.Sign(guardian1Private, newConfig.SigningMessage())
+	sigEd := ed25519.Sign(guardian1Private, newConfig.SigningMessage())
+	sigPQ, err := pqsig.Sign(guardian1ID.PQPriv, newConfig.SigningMessage())
+	if err != nil {
+		t.Fatal(err)
+	}
+	var hs HybridSignature
+	copy(hs.Ed[:], sigEd)
+	copy(hs.PQ[:], sigPQ)
+	newConfig.Signatures[gk] = hs.Bytes()
 
 	{
 		err := client.SetCurrentConfig(newConfig)

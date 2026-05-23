@@ -1,0 +1,20 @@
+{
+  "_comment": "Deterministic combiner KAT for hybrid.CombineKEM. Re-running CombineKEM on the recorded inputs MUST produce the recorded outputs. Any divergence indicates a wire-incompatible change (combiner construction changed, or one of the constants changed, or the underlying HKDF-SHA512 contract changed).",
+  "ssX25519_hex": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+  "ssMLKEM_hex": "a0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebf",
+  "transcript_utf8": "neverlur combine KAT transcript v1",
+  "contexts": {
+    "friend-request": {
+      "seed_hex": "4815b877484adb9e38b8fb8f627985cd16103ee79eaa1079c65cc0d075414d5f",
+      "seed_sha256": "637161b372e16c4b26f637d34458d1ab9b0afd56396afce59b01fa90bee18d1f"
+    },
+    "keywheel-seed": {
+      "seed_hex": "ce3c65dc409c2afe01b46f054d703187de6977d3089c44139d7351d2968b7b0e",
+      "seed_sha256": "68b27b360f0720a365b9f3a1f9e7cbb42481b834db3d27ff48ea4046c512e0dc"
+    },
+    "edtls-session": {
+      "seed_hex": "834a16078f3a08a5ed673af07c262d4b50800ef84878b4d3d010d4332c14e690",
+      "seed_sha256": "72aac6ca3c7f19beb27f10e696bd0b984b85993121b1e77a4a518d36d27bba15"
+    }
+  }
+}

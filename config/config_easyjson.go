@@ -869,6 +869,18 @@ func easyjsonDecodeGuardian6615c02e(in *jlexer.Lexer, out *Guardian) {
 			} else {
 				out.Key = in.BytesReadable()
 			}
+		case "PQKey":
+			// Hand-edited to support the hybrid Guardian.PQKey field
+			// added in the v2 SignedConfig schema. If easyjson is ever
+			// regenerated, the Guardian struct's PQKey field will be
+			// picked up automatically and this case should regenerate
+			// identically. See docs/wire-signed-config-v2.md.
+			if in.IsNull() {
+				in.Skip()
+				out.PQKey = nil
+			} else {
+				out.PQKey = in.BytesReadable()
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -895,6 +907,14 @@ func easyjsonEncodeGuardian6615c02e(out *jwriter.Writer, in Guardian) {
 	first = false
 	out.RawString("\"Key\":")
 	out.Base32Bytes(in.Key)
+	// Hand-edited to emit the hybrid Guardian.PQKey field added in v2.
+	// Always emitted (even if empty) so wire-format diffs are stable.
+	if !first {
+		out.RawByte(',')
+	}
+	first = false
+	out.RawString("\"PQKey\":")
+	out.Base32Bytes(in.PQKey)
 	out.RawByte('}')
 }
 

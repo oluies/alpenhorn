@@ -19,6 +19,7 @@ replace (
 )
 
 require (
+	github.com/cloudflare/circl v1.6.3
 	github.com/davidlazar/easyjson v0.0.0-20170924022152-f8e31516abf8
 	github.com/davidlazar/go-crypto v0.0.0-20200604182044-b73af7476f6c
 	github.com/davidlazar/mapstructure v0.0.0-20170906201703-c9d7ddc4ff97
@@ -34,7 +35,6 @@ require (
 	google.golang.org/grpc v1.81.1
 	vuvuzela.io/concurrency v0.0.0-00010101000000-000000000000
 	vuvuzela.io/crypto v0.0.0-00010101000000-000000000000
-	vuvuzela.io/internal v0.0.0-00010101000000-000000000000
 	vuvuzela.io/vuvuzela v0.0.0-00010101000000-000000000000
 )
 
@@ -52,4 +52,5 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260226221140-a57be14db171 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	vuvuzela.io/alpenhorn v0.0.0-00010101000000-000000000000 // indirect
+	vuvuzela.io/internal v0.0.0-00010101000000-000000000000 // indirect
 )

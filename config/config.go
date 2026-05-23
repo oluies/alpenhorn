@@ -17,13 +17,19 @@ import (
 
 	"github.com/oluies/neverlur/errors"
 	"github.com/oluies/neverlur/pkg"
+	"github.com/oluies/neverlur/pqsig"
 	"vuvuzela.io/vuvuzela/mixnet"
 )
 
 // Use github.com/davidlazar/easyjson:
 //go:generate easyjson .
 
-const SignedConfigVersion = 1
+// SignedConfigVersion is the on-wire schema version produced by this
+// codebase. v2 carries hybrid (Ed25519 || ML-DSA-65) signatures and
+// hybrid identities. v1 records (classical-only) are no longer
+// produced; the unmarshaler explicitly rejects them per Constitution
+// Principle V "no silent downgrade".
+const SignedConfigVersion = 2
 
 // SignedConfig is an entry in a hash chain of configs.
 type SignedConfig struct {
@@ -43,11 +49,27 @@ type SignedConfig struct {
 	Inner InnerConfig
 
 	// Guardians is the set of keys that must sign the next config
-	// to replace this config.
+	// to replace this config. Each Guardian carries both Ed25519 and
+	// ML-DSA-65 public keys (R4-bound at generation).
 	Guardians []Guardian
 
-	// Signatures is a map from base32-encoded signing keys to signatures.
+	// Signatures is a map from base32-encoded Ed25519 public key to
+	// a hybrid signature. The value is HybridSignatureSize bytes:
+	// 64 bytes of Ed25519 signature followed by 3309 bytes of
+	// ML-DSA-65 signature, in fixed-width concatenation. Verify
+	// rejects any value of wrong length.
+	//
+	// The map key is the classical (Ed25519) half of the guardian's
+	// identity because that half is the stable, human-distributable
+	// identifier; the ML-DSA-65 half is R4-derived from the same
+	// underlying seed and bound to it.
 	Signatures map[string][]byte
+
+	// MinClientVersion is the minimum SignedConfigVersion that a
+	// consumer must understand to safely parse this record. v2
+	// records set this to 2 so that v1-only consumers reject the
+	// record outright rather than silently fall through.
+	MinClientVersion int
 }
 
 type InnerConfig interface {
@@ -62,6 +84,16 @@ type InnerConfig interface {
 type Guardian struct {
 	Username string
 	Key      ed25519.PublicKey
+
+	// PQKey is the packed ML-DSA-65 public key (pqsig.PublicKeySize
+	// bytes = 1952). R4-bound to Key via
+	// pqsig.DeriveFromEd25519Seed(seed_of_Key); verifiers cannot
+	// independently confirm the binding without the seed but it is
+	// enforced operator-side at guardian-key-generation time.
+	//
+	// Required in v2 records; Validate rejects a guardian whose
+	// PQKey is empty or wrong-sized.
+	PQKey []byte
 }
 
 func (c *SignedConfig) SigningMessage() []byte {
@@ -98,12 +130,8 @@ func VerifyConfigChain(configs ...*SignedConfig) error {
 		verified := make(map[string]bool)
 		for _, guardian := range prev.Guardians {
 			keystr := base32.EncodeToString(guardian.Key)
-			sig, ok := curr.Signatures[keystr]
-			if !ok {
-				return errors.New("config %d: missing signature for key %s: %s", i, guardian.Username, keystr)
-			}
-			if !ed25519.Verify(guardian.Key, msg, sig) {
-				return errors.New("config %d: invalid signature for key %s: %s", i, guardian.Username, keystr)
+			if err := verifyHybridGuardianSig(curr, &guardian, msg, keystr); err != nil {
+				return errors.New("config %d: %s", i, err.Error())
 			}
 			verified[keystr] = true
 		}
@@ -112,12 +140,8 @@ func VerifyConfigChain(configs ...*SignedConfig) error {
 			if verified[keystr] {
 				continue
 			}
-			sig, ok := curr.Signatures[keystr]
-			if !ok {
-				return errors.New("config %d: missing signature for key %s: %s", i, guardian.Username, keystr)
-			}
-			if !ed25519.Verify(guardian.Key, msg, sig) {
-				return errors.New("config %d: invalid signature for key %s: %s", i, guardian.Username, keystr)
+			if err := verifyHybridGuardianSig(curr, &guardian, msg, keystr); err != nil {
+				return errors.New("config %d: %s", i, err.Error())
 			}
 		}
 	}
@@ -129,13 +153,39 @@ func (c *SignedConfig) Verify() error {
 	msg := c.SigningMessage()
 	for _, guardian := range c.Guardians {
 		keystr := base32.EncodeToString(guardian.Key)
-		sig, ok := c.Signatures[keystr]
-		if !ok {
-			return errors.New("missing signature for key %s: %s", guardian.Username, keystr)
+		if err := verifyHybridGuardianSig(c, &guardian, msg, keystr); err != nil {
+			return err
 		}
-		if !ed25519.Verify(guardian.Key, msg, sig) {
-			return errors.New("invalid signature for key %s: %s", guardian.Username, keystr)
-		}
+	}
+	return nil
+}
+
+// verifyHybridGuardianSig is the single per-guardian signature-check
+// path used by Verify and VerifyConfigChain. It enforces the
+// constitutional Principle V "no silent downgrade" property: both
+// signature halves MUST verify; absence or invalidity of either is
+// rejection.
+func verifyHybridGuardianSig(c *SignedConfig, guardian *Guardian, msg []byte, keystr string) error {
+	sig, ok := c.Signatures[keystr]
+	if !ok {
+		return errors.New("missing signature for key %s: %s", guardian.Username, keystr)
+	}
+	if len(sig) != HybridSignatureSize {
+		return errors.New("wrong signature length for key %s: %s (got %d, want %d)", guardian.Username, keystr, len(sig), HybridSignatureSize)
+	}
+	var hs HybridSignature
+	if err := hs.UnmarshalBytes(sig); err != nil {
+		return errors.New("decode signature for key %s: %s: %s", guardian.Username, keystr, err.Error())
+	}
+	if !ed25519.Verify(guardian.Key, msg, hs.Ed[:]) {
+		return errors.New("classical (ed25519) signature did not verify for key %s: %s", guardian.Username, keystr)
+	}
+	pqPub, err := pqsig.UnpackPublicKey(guardian.PQKey)
+	if err != nil {
+		return errors.New("bad guardian PQ key for %s: %s: %s", guardian.Username, keystr, err.Error())
+	}
+	if !pqsig.Verify(pqPub, msg, hs.PQ[:]) {
+		return errors.New("post-quantum (ml-dsa-65) signature did not verify for key %s: %s", guardian.Username, keystr)
 	}
 	return nil
 }
@@ -144,9 +194,18 @@ func (c *SignedConfig) Validate() error {
 	if c.Version <= 0 {
 		return errors.New("invalid version number: %d", c.Version)
 	}
+	if c.Version != SignedConfigVersion {
+		return errors.New("unsupported SignedConfig version %d (this codebase produces and accepts v%d)", c.Version, SignedConfigVersion)
+	}
+	if c.MinClientVersion > SignedConfigVersion {
+		return errors.New("MinClientVersion %d exceeds this codebase's SignedConfigVersion %d", c.MinClientVersion, SignedConfigVersion)
+	}
 	for i, guardian := range c.Guardians {
 		if len(guardian.Key) != ed25519.PublicKeySize {
 			return errors.New("invalid key for guardian %d: %v", i, guardian.Key)
+		}
+		if len(guardian.PQKey) != pqsig.PublicKeySize {
+			return errors.New("invalid PQ key length for guardian %d: got %d, want %d", i, len(guardian.PQKey), pqsig.PublicKeySize)
 		}
 		if guardian.Username == "" {
 			return errors.New("invalid username for guardian %d: %q", i, guardian.Username)
@@ -184,15 +243,37 @@ type signedConfigV1 struct {
 	Signatures map[string][]byte
 }
 
+// signedConfigV2 is the JSON-friendly v2 form. Carried alongside (not
+// in place of) signedConfigV1 so the old type definition stays parseable
+// for any v1 record lying around in tests or backups. The runtime
+// SignedConfig.UnmarshalJSON dispatches on the JSON-embedded Version
+// field and refuses v1 records (per docs/wire-signed-config-v2.md).
+type signedConfigV2 struct {
+	Version int
+
+	Created        time.Time
+	Expires        time.Time
+	PrevConfigHash string
+
+	Service string
+	Inner   json.RawMessage
+
+	Guardians []Guardian
+
+	Signatures map[string][]byte // each value is HybridSignatureSize bytes
+
+	MinClientVersion int
+}
+
 func (c *SignedConfig) MarshalJSON() ([]byte, error) {
 	switch c.Version {
-	case 1:
+	case 2:
 		innerJSON, err := json.Marshal(c.Inner)
 		if err != nil {
 			return nil, err
 		}
-		c1 := &signedConfigV1{
-			Version: 1,
+		c2 := &signedConfigV2{
+			Version: 2,
 
 			Created:        c.Created,
 			Expires:        c.Expires,
@@ -201,10 +282,13 @@ func (c *SignedConfig) MarshalJSON() ([]byte, error) {
 			Service: c.Service,
 			Inner:   innerJSON,
 
-			Guardians:  c.Guardians,
-			Signatures: c.Signatures,
+			Guardians:        c.Guardians,
+			Signatures:       c.Signatures,
+			MinClientVersion: c.MinClientVersion,
 		}
-		return json.Marshal(c1)
+		return json.Marshal(c2)
+	case 1:
+		return nil, errors.New("SignedConfig v1 is no longer emitted by this codebase; bump Version to %d (see docs/wire-signed-config-v2.md)", SignedConfigVersion)
 	default:
 		return nil, errors.New("unknown SignedConfig version: %d", c.Version)
 	}
@@ -217,31 +301,29 @@ func (c *SignedConfig) UnmarshalJSON(data []byte) error {
 	}
 
 	switch version {
-	case 1:
-		c1 := new(signedConfigV1)
-		err := json.Unmarshal(data, c1)
+	case 2:
+		c2 := new(signedConfigV2)
+		err := json.Unmarshal(data, c2)
 		if err != nil {
 			return err
 		}
-
-		inner, err := decodeInner(c1.Service, c1.Inner)
+		inner, err := decodeInner(c2.Service, c2.Inner)
 		if err != nil {
 			return err
 		}
-
-		c.Version = 1
-
-		c.Created = c1.Created
-		c.Expires = c1.Expires
-		c.PrevConfigHash = c1.PrevConfigHash
-
-		c.Service = c1.Service
+		c.Version = 2
+		c.Created = c2.Created
+		c.Expires = c2.Expires
+		c.PrevConfigHash = c2.PrevConfigHash
+		c.Service = c2.Service
 		c.Inner = inner
-
-		c.Guardians = c1.Guardians
-		c.Signatures = c1.Signatures
+		c.Guardians = c2.Guardians
+		c.Signatures = c2.Signatures
+		c.MinClientVersion = c2.MinClientVersion
+	case 1:
+		return errors.New("SignedConfig v1 records are not accepted by this codebase (no silent downgrade per constitution Principle V); see docs/wire-signed-config-v2.md")
 	default:
-		return errors.New("unknown SignedConfig version: %d", c.Version)
+		return errors.New("unknown SignedConfig version: %d", version)
 	}
 
 	return nil

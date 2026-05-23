@@ -30,13 +30,31 @@ import (
 )
 
 const (
-	// SizeIntro is the size in bytes of an add-friend introduction.
-	// This should be equal to int(unsafe.Sizeof(introduction{})) in
-	// the alpenhorn package.
+	// SizeIntro is the size in bytes of a v1 (classical) add-friend
+	// introduction. This should be equal to int(unsafe.Sizeof(introduction{}))
+	// in the neverlur package.
 	SizeIntro = 228
 
-	// SizeEncryptedIntro is the size of an encrypted introduction.
+	// SizeEncryptedIntro is the size of an encrypted v1 introduction.
 	SizeEncryptedIntro = SizeIntro + ibe.Overhead
+
+	// SizeIntroV2 is the size in bytes of a v2 (hybrid) add-friend
+	// introduction under the option-F static-ephemeral design (see
+	// docs/wire-introduction-v2.md). This MUST be kept in sync with the
+	// SizeIntroV2 constant in the top-level neverlur package (see
+	// intro.go). The value here is duplicated rather than imported to
+	// avoid a circular package dependency (neverlur → addfriend →
+	// neverlur); a compile-time assertion in intro.go fails the build if
+	// the two drift.
+	//
+	// As of this commit the constant is declared but not yet consumed
+	// by the on-wire format; the v1 SizeIntro / SizeEncryptedIntro
+	// remain authoritative until the wire switch lands in a follow-up
+	// commit.
+	SizeIntroV2 = 6580
+
+	// SizeEncryptedIntroV2 is the size of an encrypted v2 introduction.
+	SizeEncryptedIntroV2 = SizeIntroV2 + ibe.Overhead
 
 	sizeMixMessage = int(unsafe.Sizeof(MixMessage{}))
 )

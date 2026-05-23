@@ -1,0 +1,9 @@
+{
+  "_comment": "Deterministic binding KAT for pqkem.DeriveFromEd25519Seed (docs/wire-introduction-v2.md option F; research.md R4 extended to the long-term ML-KEM-768 half of a hybrid identity). Re-running DeriveFromEd25519Seed on the recorded Ed25519 seed MUST produce an ML-KEM-768 public/private keypair whose canonical packed bytes hash to the SHA-256 values recorded here. If any of these values change after a CIRCL upgrade, the upgrade is wire-incompatible and must be treated as a hybrid-identity break across the deployment.",
+  "_info_string": "neverlur/v1 pq-kem-id-binding (must match pqkem.bindingInfo)",
+  "ed25519_seed_hex": "6e657665726c75722d62696e64696e672d6b61742d736565642d763121212121",
+  "expected_mlkem_pub_sha256": "060c2a27403e7b60bcd07ccf33bf0972609ee55e755d9aa8c8b55a9b9e09d5a8",
+  "expected_mlkem_pub_size": "1184",
+  "expected_mlkem_sk_sha256": "a0bd2c09466cb15451325e269b40a373eb020e457eda6cddd2e6cd0772be532b",
+  "expected_mlkem_sk_size": "2400"
+}

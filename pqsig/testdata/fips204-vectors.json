@@ -1,0 +1,7 @@
+{
+  "_comment": "PLACEHOLDER. This file must be replaced with real FIPS 204 ML-DSA-65 known-answer test vectors before the constitution Quality Gate ('Crypto PRs require KAT test additions; review must explicitly confirm KATs were checked against an authoritative source') can be satisfied.",
+  "_source": "Authoritative vectors should be drawn from NIST ACVP-Server reference output for ML-DSA-65 (sub-cases: keyGen, sigGen, sigVer). See https://github.com/usnistgov/ACVP-Server. The expected commit message when this file is populated must record: (a) the upstream artifact URL, (b) the SHA-256 of the downloaded vector file, and (c) the date of retrieval.",
+  "_status": "placeholder",
+  "_note_on_circl_acvp": "CIRCL ships gzipped NIST ACVP vectors under sign/mldsa/testdata/ML-DSA-{keyGen,sigGen,sigVer}-FIPS204/ and its TestACVP suite verifies primitive conformance on every release. For Neverlur this means we have two viable paths: (1) re-commit a frozen copy of the NIST vectors here so we can audit them in our own tree; (2) treat CIRCL's TestACVP as the authoritative KAT and have our kat_test.go verify only wrapper-level invariants (round-trip, binding KAT, serialization sizes). Decide and record the choice when populating this file.",
+  "vectors": []
+}
