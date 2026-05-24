@@ -186,6 +186,7 @@ func (c *Client) scanBloomFilter(conn typesocket.Conn, v coordinator.MailboxURL)
 				call := &IncomingCall{
 					Username:   user.FromUsername,
 					Intent:     intent,
+					Round:      v.Round,
 					SessionKey: c.wheel.SessionKey(user.FromUsername, v.Round),
 				}
 				c.Handler.ReceivedCall(call)

@@ -128,8 +128,12 @@ func (f *Friend) Call(intent int) *OutgoingCall {
 }
 
 type IncomingCall struct {
-	Username   string
-	Intent     int
+	Username string
+	Intent   int
+	// Round is the dialing round at which this call was received.
+	// Conversation peers use it as the keywheel seed-round when
+	// rolling per-round keys for subsequent conversation rounds.
+	Round      uint32
 	SessionKey *[32]byte
 }
 
@@ -150,6 +154,15 @@ func (r *OutgoingCall) Sent() bool {
 	sent := r.sentRound != 0
 	r.client.mu.Unlock()
 	return sent
+}
+
+// Round returns the dialing round at which the call was sent, or
+// 0 if the call has not been sent yet. Callers should pair this
+// with SessionKey to seed a conversation-layer keywheel.
+func (r *OutgoingCall) Round() uint32 {
+	r.client.mu.Lock()
+	defer r.client.mu.Unlock()
+	return r.sentRound
 }
 
 func (r *OutgoingCall) Intent() int {
