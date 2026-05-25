@@ -25,7 +25,7 @@ import (
 	"github.com/oluies/neverlur/log"
 	"github.com/oluies/neverlur/pkg"
 	"github.com/oluies/neverlur/typesocket"
-	"vuvuzela.io/vuvuzela/mixnet"
+	"github.com/oluies/neverlur/mixnet"
 )
 
 // Server is the coordinator (entry) server for the add-friend or dialing

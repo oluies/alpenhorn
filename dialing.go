@@ -19,7 +19,7 @@ import (
 	"github.com/oluies/neverlur/log"
 	"github.com/oluies/neverlur/typesocket"
 	"vuvuzela.io/crypto/onionbox"
-	"vuvuzela.io/vuvuzela/mixnet"
+	"github.com/oluies/neverlur/mixnet"
 )
 
 type dialingRoundState struct {

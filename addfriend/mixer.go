@@ -26,7 +26,7 @@ import (
 	"vuvuzela.io/crypto/onionbox"
 	"vuvuzela.io/crypto/rand"
 	"vuvuzela.io/crypto/shuffle"
-	"vuvuzela.io/vuvuzela/mixnet"
+	"github.com/oluies/neverlur/mixnet"
 )
 
 const (

@@ -26,8 +26,8 @@ import (
 	"github.com/oluies/neverlur/encoding/toml"
 	"github.com/oluies/neverlur/log"
 	"vuvuzela.io/crypto/rand"
-	"vuvuzela.io/vuvuzela/mixnet"
-	pb "vuvuzela.io/vuvuzela/mixnet/convopb"
+	"github.com/oluies/neverlur/mixnet"
+	pb "github.com/oluies/neverlur/mixnet/convopb"
 )
 
 var (

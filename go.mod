@@ -25,6 +25,7 @@ require (
 	github.com/davidlazar/mapstructure v0.0.0-20170906201703-c9d7ddc4ff97
 	github.com/dchest/siphash v1.2.3
 	github.com/dgraph-io/badger v1.6.2
+	github.com/gogo/protobuf v1.3.2
 	github.com/gorilla/websocket v1.5.3
 	github.com/kylelemons/godebug v1.1.0
 	github.com/mattn/go-isatty v0.0.22
@@ -43,7 +44,6 @@ require (
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/dgraph-io/ristretto v0.0.2 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
-	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	golang.org/x/sys v0.45.0 // indirect

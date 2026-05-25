@@ -18,7 +18,7 @@ import (
 	"github.com/oluies/neverlur/errors"
 	"github.com/oluies/neverlur/pkg"
 	"github.com/oluies/neverlur/pqsig"
-	"vuvuzela.io/vuvuzela/mixnet"
+	"github.com/oluies/neverlur/mixnet"
 )
 
 // Use github.com/davidlazar/easyjson:

@@ -15,9 +15,9 @@ import (
 	"github.com/oluies/neverlur/dialing"
 	"github.com/oluies/neverlur/edtls"
 	"github.com/oluies/neverlur/log"
+	"github.com/oluies/neverlur/mixnet"
+	"github.com/oluies/neverlur/mixnet/convopb"
 	"vuvuzela.io/crypto/rand"
-	"vuvuzela.io/vuvuzela/mixnet"
-	"vuvuzela.io/vuvuzela/mixnet/convopb"
 )
 
 type Mixchain struct {

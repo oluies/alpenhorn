@@ -27,7 +27,7 @@ import (
 	"vuvuzela.io/crypto/bls"
 	"vuvuzela.io/crypto/ibe"
 	"vuvuzela.io/crypto/onionbox"
-	"vuvuzela.io/vuvuzela/mixnet"
+	"github.com/oluies/neverlur/mixnet"
 )
 
 type addFriendRoundState struct {
