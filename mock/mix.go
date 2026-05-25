@@ -87,7 +87,13 @@ func LaunchMixchain(length int, coordinatorKey ed25519.PublicKey) *Mixchain {
 
 		go func(pos int) {
 			err := grpcServer.Serve(listeners[pos])
-			if err != grpc.ErrServerStopped {
+			// Modern gRPC returns nil from Serve() when Stop() or
+			// GracefulStop() is called (older versions returned
+			// grpc.ErrServerStopped). Both are clean shutdowns and
+			// must not trigger log.Fatal — that would os.Exit(1) the
+			// test binary mid-test, producing a package-level FAIL
+			// with no individual --- FAIL: marker.
+			if err != nil && err != grpc.ErrServerStopped {
 				log.Fatal("vrpc.Serve:", err)
 			}
 		}(pos)
