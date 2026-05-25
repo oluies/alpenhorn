@@ -16,9 +16,9 @@ import (
 
 	"github.com/oluies/neverlur/debug"
 	"github.com/oluies/neverlur/hybrid"
+	"github.com/oluies/neverlur/mixnet"
 	"github.com/oluies/neverlur/pkg"
 	"github.com/oluies/neverlur/pqsig"
-	"vuvuzela.io/vuvuzela/mixnet"
 )
 
 type trivialInner struct{}

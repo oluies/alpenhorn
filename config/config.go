@@ -16,9 +16,9 @@ import (
 	"github.com/davidlazar/go-crypto/encoding/base32"
 
 	"github.com/oluies/neverlur/errors"
+	"github.com/oluies/neverlur/mixnet"
 	"github.com/oluies/neverlur/pkg"
 	"github.com/oluies/neverlur/pqsig"
-	"vuvuzela.io/vuvuzela/mixnet"
 )
 
 // Use github.com/davidlazar/easyjson:

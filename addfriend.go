@@ -21,13 +21,13 @@ import (
 	"github.com/oluies/neverlur/coordinator"
 	"github.com/oluies/neverlur/errors"
 	"github.com/oluies/neverlur/log"
+	"github.com/oluies/neverlur/mixnet"
 	"github.com/oluies/neverlur/pkg"
 	"github.com/oluies/neverlur/typesocket"
 	"vuvuzela.io/concurrency"
 	"vuvuzela.io/crypto/bls"
 	"vuvuzela.io/crypto/ibe"
 	"vuvuzela.io/crypto/onionbox"
-	"vuvuzela.io/vuvuzela/mixnet"
 )
 
 type addFriendRoundState struct {
