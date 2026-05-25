@@ -20,13 +20,13 @@ import (
 
 	"github.com/oluies/neverlur/edhttp"
 	"github.com/oluies/neverlur/errors"
+	"github.com/oluies/neverlur/mixnet"
 	"vuvuzela.io/concurrency"
 	"vuvuzela.io/crypto/bn256"
 	"vuvuzela.io/crypto/ibe"
 	"vuvuzela.io/crypto/onionbox"
 	"vuvuzela.io/crypto/rand"
 	"vuvuzela.io/crypto/shuffle"
-	"github.com/oluies/neverlur/mixnet"
 )
 
 const (
